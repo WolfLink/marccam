@@ -1,5 +1,5 @@
 classdef Cam
-    %CAM Summary of this class goes here
+    %CAM A 
     %   Detailed explanation goes here
     
     properties
@@ -12,6 +12,8 @@ classdef Cam
         function obj = Cam(adaptor, id)
             obj.AdaptorName = adaptor;
             obj.DeviceID = id;
+            c = imaqhwinfo(adaptor, id);
+            obj.DeviceName = c.DeviceName;
         end
     end
     
@@ -23,10 +25,8 @@ classdef Cam
             for a = dict.InstalledAdaptors
                 bs = imaqhwinfo(char(a));
                 for b = bs.DeviceIDs
-                    newcam = Cam(a{1},b{1});
-                    c = imaqhwinfo(char(a), b{1});
-                    newcam.DeviceName = c.DeviceName;
-                    cameras = [cameras, newcam]; %#ok<*AGROW> %suppressed array growth warning here %#ok<AGROW>
+                    newcam = Cam(char(a),b{1});
+                    cameras = [cameras, newcam]; %#ok<AGROW> %suppressed array growth warning here
                 end
             end
                     
@@ -44,7 +44,15 @@ classdef Cam
               end
            end
         end
+        
+        function previewAllCameras()
+            cams = Cam.listCameras;
+            for cam = cams
+                vid = videoinput(cam.AdaptorName, cam.DeviceID); %#ok<TNMLP> %supressed video api usage warning here
+                preview(vid)
+            end
+        end
+        
     end
-    
 end
 

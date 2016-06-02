@@ -22,7 +22,7 @@ function varargout = multicam(varargin)
 
 % Edit the above text to modify the response to help multicam
 
-% Last Modified by GUIDE v2.5 01-Jun-2016 15:43:46
+% Last Modified by GUIDE v2.5 02-Jun-2016 14:42:09
 
     % Begin initialization code - DO NOT EDIT
     gui_Singleton = 0;
@@ -76,7 +76,7 @@ end
 
 
 % --- Executes on selection change in cameramenu.
-function cameramenu_Callback(hObject, eventdata, handles)
+function cameramenu_Callback(hObject, ~, ~)
 % hObject    handle to cameramenu (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
@@ -84,25 +84,45 @@ function cameramenu_Callback(hObject, eventdata, handles)
 % Hints: contents = cellstr(get(hObject,'String')) returns cameramenu contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from cameramenu
     minstance = MulticamInstance.instanceForFigure(get(hObject, 'parent'));
-    fprintf('Multicam Instance #: %d\n', minstance.numID)
+    strs = get(hObject, 'String');
+    i = get(hObject, 'Value');
+    str = strs{i};
+    disp(str)
+    if i == 1
+        % The default "Select Camera" is selected (no camera is selected)
+        %minstance.switchCamera(Cam(
+    else
+    
+    end
 end
+
 % --- Executes during object creation, after setting all properties.
 function cameramenu_CreateFcn(hObject, ~, ~)
 % hObject    handle to cameramenu (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
-    cameratypes = 'Select Camera';
+    cameratypes = {'Select Camera'};
+    minstance = MulticamInstance.instanceForFigure(get(hObject, 'parent'));
     for cam = Cam.listCameras
         c = cam;
         name = c.DeviceName;
         cID = c.DeviceID;
-        cameratypes = sprintf('%s\n%s %d', cameratypes, name, cID);
+        %cameratypes = sprintf('%s\n%s %d', cameratypes, name, cID);
+        cameratypes = [cameratypes sprintf('%s %d', name, cID)];
     end
     hObject.String = cameratypes;
-    MulticamInstance.instanceForFigure(get(hObject, 'parent'));
 % Hint: popupmenu controls usually have a white background on Windows.
 %       See ISPC and COMPUTER.
     if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
         set(hObject,'BackgroundColor','white');
     end
+end
+
+
+% --- Executes during object deletion, before destroying properties.
+function figure1_DeleteFcn(hObject, eventdata, handles)
+% hObject    handle to figure1 (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)'
+    MulticamInstance.removeInstance(hObject);
 end
