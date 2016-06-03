@@ -84,16 +84,14 @@ function cameramenu_Callback(hObject, ~, ~)
 % Hints: contents = cellstr(get(hObject,'String')) returns cameramenu contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from cameramenu
     minstance = MulticamInstance.instanceForFigure(get(hObject, 'parent'));
-    strs = get(hObject, 'String');
     i = get(hObject, 'Value');
-    str = strs{i};
-    disp(str)
     if i == 1
         % The default "Select Camera" is selected (no camera is selected)
-        %minstance.switchCamera(Cam(
+        minstance.switchCamera(Cam.nullCam);
     else
-    
+        minstance.switchCamera(minstance.cameras(i - 1));
     end
+    disp(minstance.currentCamera)
 end
 
 % --- Executes during object creation, after setting all properties.
@@ -103,7 +101,7 @@ function cameramenu_CreateFcn(hObject, ~, ~)
 % handles    empty - handles not created until after all CreateFcns called
     cameratypes = {'Select Camera'};
     minstance = MulticamInstance.instanceForFigure(get(hObject, 'parent'));
-    for cam = Cam.listCameras
+    for cam = minstance.cameras
         c = cam;
         name = c.DeviceName;
         cID = c.DeviceID;

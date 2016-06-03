@@ -1,24 +1,25 @@
-classdef MulticamInstance
+classdef MulticamInstance < handle
     %MULTICAMINSTANCE Summary of this class goes here
     %   Detailed explanation goes here
     
     properties
         figure
         numID
-        camera
-        cameraDatas
+        currentCamera
+        cameras
     end
     
     methods
         function obj = MulticamInstance(f)
             obj.figure = f;
             obj.numID = f.Number;
+            obj.cameras = Cam.listCameras;
+            obj.currentCamera = Cam.nullCam;
         end
-        function switchCamera(cam)
-            if isempty(camera)
-                camera = cam;
-            else
-            end
+        function switchCamera(obj, cam)
+            %make a function in the camera class that stops and shuts down
+            %the current camera
+            obj.currentCamera = cam;
         end
     end
     
