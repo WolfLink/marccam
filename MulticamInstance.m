@@ -44,6 +44,8 @@ classdef MulticamInstance < handle
         end
         function b = removeInstance(fig)
             hmap = MulticamInstance.manageHMap(fig);
+            minstance = hmap(fig.Number);
+            minstance.delete;
             hmap.remove(fig.Number);
         end
             

@@ -1,14 +1,42 @@
 classdef Cam < handle
-    %CAM A 
-    %   Detailed explanation goes here
+    %CAM A class to represent a connected camera.
+    %   The Cam class represents a camera given by its AdaptorName and
+    %   DeviceID.  These two pieces of information are what determine a
+    %   specific camera according to the imaq library.  The class stores
+    %   these pieces of information and manages interaction with the camera
+    %   it represents, including starting and stopping the camera and
+    %   getting data from the camera.
     
     properties
         AdaptorName
         DeviceID
         DeviceName
+        vidin
     end
     
     methods
+        % camera management functions
+        function arm(obj)
+           obj.vidin =  videoinput(obj.AdaptorName, obj.DeviceID); %This should work most of the time but if your camera needs specific settings, write a subclass.
+        end
+        function images = getFrames(obj, numFrames)
+            obj.vidin.TriggerRepeat = numFrames - 1;
+            start(obj.vidin);
+            wait(obj.vidin, 100);
+            images = zeros(720, 1280, numFrames);
+            %if obj.vidin.FramesAvailable == numFrames
+                for i = 1 : numFrames
+                    images(:,:,i) = getdata(obj.vidin);
+                    % note: this line was based off of edcam but could be a
+                    % source of lag and inefficient memory usage.  This
+                    % could be optimized.
+                end
+            %else
+            %    images = 0;
+            %end
+        end
+            
+        % constructors and constructor-like functions
         function obj = Cam(adaptor, id)
             obj.AdaptorName = adaptor;
             obj.DeviceID = id;
@@ -26,8 +54,7 @@ classdef Cam < handle
         function obj = nullCam()
             persistent nullc;
             if isempty(nullc)
-                nullc = Cam('none',0);
-                nullc.DeviceName = 'none';
+                nullc = NullCam();
             end
             obj = nullc;
         end
