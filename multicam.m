@@ -87,7 +87,7 @@ function cameramenu_Callback(hObject, ~, ~)
         % The default "Select Camera" is selected (no camera is selected)
         minstance.switchCamera(Cam.nullCam);
     else
-        minstance.switchCamera(minstance.cameras(i - 1));
+        minstance.switchCamera(minstance.cameras{i - 1});
     end
     disp(minstance.currentCamera)
 end
@@ -100,9 +100,9 @@ function cameramenu_CreateFcn(hObject, ~, ~)
     cameratypes = {'Select Camera'};
     minstance = MulticamInstance.instanceForFigure(get(hObject, 'parent'));
     for cam = minstance.cameras
-        c = cam;
+        c = cam{1};
         name = c.DeviceName;
-        cID = c.DeviceID;
+        cID = c.serialNumber;
         %cameratypes = sprintf('%s\n%s %d', cameratypes, name, cID);
         cameratypes = [cameratypes sprintf('%s %d', name, cID)];
     end

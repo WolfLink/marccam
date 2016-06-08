@@ -12,7 +12,7 @@ classdef Cam < handle
         DeviceID
         DeviceName
         vidin
-        regex
+        serialNumber
     end
     
     methods
@@ -23,10 +23,6 @@ classdef Cam < handle
         
         function picture = takePicture(obj)
            picture = getsnapshot(obj.vidin);
-           i = regexpi(obj.vidin.VideoFormat, 'ycbcr');
-           if ~isempty(i)
-              picture = ycbcr2rgb(picture); 
-           end
         end
         
         function images = getFrames(obj, numFrames)
@@ -59,6 +55,12 @@ classdef Cam < handle
             c = imaqhwinfo(obj.AdaptorName, obj.DeviceID);
             obj.DeviceName = c.DeviceName;
             arm(obj);
+            s = getselectedsource(obj.vidin);
+            if isprop(s, 'DeviceID')
+                obj.serialNumber = s.DeviceID;
+            else
+                obj.serialNumber = obj.DeviceID; 
+            end
         end 
         function b = isnull(obj)
             b = eq(obj, Cam.nullCam());
@@ -83,7 +85,7 @@ classdef Cam < handle
                     c = imaqhwinfo(char(a), b{1});
                     newcam = Cam.camWithProperties(char(a), c.DeviceName, b{1});
                     newcam.initCam;
-                    cameras = [cameras, newcam]; %#ok<AGROW> %suppressed array growth warning here
+                    cameras = [cameras, {newcam}]; %#ok<AGROW> %suppressed array growth warning here
                 end
             end
                     
@@ -118,8 +120,19 @@ classdef Cam < handle
             % the program is running.
             switch name
                 case 'FaceTime HD Camera'
-                    c = FacetimeCam(adaptor, id);
+                    c = FacetimeCam(adaptor, id)
                 otherwise
+                    c = Cam.camWithAdaptorAndID(adaptor, id);
+            end
+        end
+        function c = camWithAdaptorAndID(adaptor, id)
+            % This function's purpose is similar to camWithProperties
+            % except it is used to provide custom classes for adaptors
+            % rather than specific cameras.
+            switch adaptor
+                case 'gentl'
+                    c = GentlCam(adaptor, id);
+                otherwise  
                     c = Cam(adaptor, id);
             end
         end
