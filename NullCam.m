@@ -6,9 +6,17 @@ classdef NullCam < Cam
     end
     
     methods
+        function arm(~)
+        end
+        function picture = takePicture(~)
+           picture = 0; 
+        end
         function obj = NullCam()
             obj@Cam('none',0);
             obj.DeviceName = 'none';
+        end
+        function images = getFrames(~, ~)
+            images = 0;
         end
     end
     

@@ -12,6 +12,7 @@ classdef Cam < handle
         DeviceID
         DeviceName
         vidin
+        regex
     end
     
     methods
@@ -19,7 +20,18 @@ classdef Cam < handle
         function arm(obj)
            obj.vidin =  videoinput(obj.AdaptorName, obj.DeviceID); %This should work most of the time but if your camera needs specific settings, write a subclass.
         end
+        
+        function picture = takePicture(obj)
+           picture = getsnapshot(obj.vidin);
+           i = regexpi(obj.vidin.VideoFormat, 'ycbcr');
+           if ~isempty(i)
+              picture = ycbcr2rgb(picture); 
+           end
+        end
+        
         function images = getFrames(obj, numFrames)
+            %NOTE: This function was taken from edcam and could be improved
+            %upon
             obj.vidin.TriggerRepeat = numFrames - 1;
             start(obj.vidin);
             wait(obj.vidin, 100);
@@ -27,13 +39,15 @@ classdef Cam < handle
             %if obj.vidin.FramesAvailable == numFrames
                 for i = 1 : numFrames
                     images(:,:,i) = getdata(obj.vidin);
-                    % note: this line was based off of edcam but could be a
-                    % source of lag and inefficient memory usage.  This
-                    % could be optimized.
                 end
             %else
             %    images = 0;
             %end
+        end
+        
+        function props = getCameraProperties(obj)
+           %use the output of this function for writing custom subclasses for cameras
+           props = get(obj.vidin);
         end
             
         % constructors and constructor-like functions
@@ -44,6 +58,7 @@ classdef Cam < handle
         function initCam(obj)
             c = imaqhwinfo(obj.AdaptorName, obj.DeviceID);
             obj.DeviceName = c.DeviceName;
+            arm(obj);
         end 
         function b = isnull(obj)
             b = eq(obj, Cam.nullCam());
@@ -65,7 +80,8 @@ classdef Cam < handle
             for a = dict.InstalledAdaptors
                 bs = imaqhwinfo(char(a));
                 for b = bs.DeviceIDs
-                    newcam = Cam(char(a),b{1});
+                    c = imaqhwinfo(char(a), b{1});
+                    newcam = Cam.camWithProperties(char(a), c.DeviceName, b{1});
                     newcam.initCam;
                     cameras = [cameras, newcam]; %#ok<AGROW> %suppressed array growth warning here
                 end
@@ -91,6 +107,20 @@ classdef Cam < handle
             for cam = cams
                 vid = videoinput(cam.AdaptorName, cam.DeviceID); %#ok<TNMLP> %supressed video api usage warning here
                 preview(vid)
+            end
+        end
+        
+        
+        function c = camWithProperties(adaptor, name, id)
+            % Use this swtich statement to identify specif cameras and
+            % identify custom classes written for them.  This function gets
+            % called by listCameras and is therefore used by multicam when
+            % the program is running.
+            switch name
+                case 'FaceTime HD Camera'
+                    c = FacetimeCam(adaptor, id);
+                otherwise
+                    c = Cam(adaptor, id);
             end
         end
         

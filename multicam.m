@@ -1,10 +1,8 @@
 function varargout = multicam(varargin)
 % MULTICAM MATLAB code for multicam.fig
-%      MULTICAM, by itself, creates a new MULTICAM or raises the existing
-%      singleton*.
+%      MULTICAM, by itself, creates a new MULTICAM instance.
 %
-%      H = MULTICAM returns the handle to a new MULTICAM or the handle to
-%      the existing singleton*.
+%      H = MULTICAM returns the handle to a new MULTICAM instance.
 %
 %      MULTICAM('CALLBACK',hObject,eventData,handles,...) calls the local
 %      function named CALLBACK in MULTICAM.M with the given input arguments.
@@ -22,7 +20,7 @@ function varargout = multicam(varargin)
 
 % Edit the above text to modify the response to help multicam
 
-% Last Modified by GUIDE v2.5 02-Jun-2016 14:42:09
+% Last Modified by GUIDE v2.5 07-Jun-2016 16:53:51
 
     % Begin initialization code - DO NOT EDIT
     gui_Singleton = 0;
@@ -123,4 +121,17 @@ function figure1_DeleteFcn(hObject, ~, ~)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)'
     MulticamInstance.removeInstance(hObject);
+end
+
+
+% --- Executes on button press in takePictureButton.
+function takePictureButton_Callback(hObject, eventdata, handles)
+% hObject    handle to takePictureButton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+    figg = get(hObject, 'parent');
+    minstance = MulticamInstance.instanceForFigure(figg);
+    axe = handles.mainDisplay;
+    axes(axe)
+    image(minstance.currentCamera.takePicture);
 end
