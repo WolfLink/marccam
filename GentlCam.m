@@ -11,7 +11,7 @@ classdef GentlCam < Cam
         end
         function initCam(obj)
             initCam@Cam(obj);
-            obj.vidin.returnedColorspace = 'grayscale';
+            obj.vidin.returnedColorspace = 'rgb';
         end
     end
     
