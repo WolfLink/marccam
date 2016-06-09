@@ -20,7 +20,7 @@ function varargout = multicam(varargin)
 
 % Edit the above text to modify the response to help multicam
 
-% Last Modified by GUIDE v2.5 07-Jun-2016 16:53:51
+% Last Modified by GUIDE v2.5 09-Jun-2016 12:35:19
 
     % Begin initialization code - DO NOT EDIT
     gui_Singleton = 0;
@@ -74,7 +74,7 @@ end
 
 
 % --- Executes on selection change in cameramenu.
-function cameramenu_Callback(hObject, ~, ~)
+function cameramenu_Callback(hObject, ~, handles)
 % hObject    handle to cameramenu (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
@@ -82,6 +82,9 @@ function cameramenu_Callback(hObject, ~, ~)
 % Hints: contents = cellstr(get(hObject,'String')) returns cameramenu contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from cameramenu
     minstance = MulticamInstance.instanceForFigure(get(hObject, 'parent'));
+    if isempty(minstance.mainDisplayAxes)
+       minstance.mainDisplayAxes = handles.mainDisplay;
+    end
     i = get(hObject, 'Value');
     if i == 1
         % The default "Select Camera" is selected (no camera is selected)
@@ -131,7 +134,27 @@ function takePictureButton_Callback(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
     figg = get(hObject, 'parent');
     minstance = MulticamInstance.instanceForFigure(figg);
-    axe = handles.mainDisplay;
-    axes(axe)
-    image(minstance.currentCamera.takePicture);
+    minstance.updateImageOutput();
+end
+
+
+% --- Executes on button press in startbutton.
+function startbutton_Callback(hObject, eventdata, handles)
+% hObject    handle to startbutton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+    figg = get(hObject, 'parent');
+    minstance = MulticamInstance.instanceForFigure(figg);
+    minstance.currentCamera.startRecording();
+    %camear = minstance.
+end
+
+% --- Executes on button press in stopbutton.
+function stopbutton_Callback(hObject, eventdata, handles)
+% hObject    handle to stopbutton (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+    figg = get(hObject, 'parent');
+    minstance = MulticamInstance.instanceForFigure(figg);
+    minstance.currentCamera.stopRecording();
 end

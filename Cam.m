@@ -13,16 +13,32 @@ classdef Cam < handle
         DeviceName
         vidin
         serialNumber
+        minstance
     end
     
     methods
         % camera management functions
         function arm(obj)
            obj.vidin =  videoinput(obj.AdaptorName, obj.DeviceID); %This should work most of the time but if your camera needs specific settings, write a subclass.
+           %override this function to prepare for hardware triggering
+        end
+        function startRecording(obj)
+           start(obj.vidin); 
+        end
+        function stopRecording(obj)
+            stop(obj.vidin);
         end
         
         function picture = takePicture(obj)
            picture = getsnapshot(obj.vidin);
+        end
+        
+        function picture = getCurrentImage(obj)
+           if obj.vidin.FramesAvailable > 0
+              picture = getdata(obj.vidin, 1); %get the most recent frame
+           else
+              picture = obj.takePicture(); %if there are no currently available frames then take a picture now
+           end
         end
         
         function images = getFrames(obj, numFrames)
@@ -137,19 +153,8 @@ classdef Cam < handle
             end
         end
         
-        
-        function notesForTriggering
-            v.TriggerMode = 'hardware';
-            v.FramesPerTrigger = 1;
-            v.TriggerRepeat = inf;
-            s = getselectedsource(v);
-            s.TriggerMode = 1;
-            s.TriggerActivation = 'FallingEdge';
-            % after configuring the camera in this way, you can start the
-            % camera and it will take frames whenever it receieves a
-            % trigger.  Later you Stop the camera.  As far as I can tell,
-            % there are no trigger callbacks so you will have to loop stuff
-            % manually probably.
+        function hardwaretrigger(v, e, obj)
+           obj.updateImageOutput();
         end
         
     end

@@ -9,9 +9,35 @@ classdef GentlCam < Cam
         function obj = GentlCam(adaptor, id)
            obj@Cam(adaptor, id); 
         end
+        function startRecording(obj)
+            %set gentl camera to automcatically record based on the
+            %hardware trigger
+            v = obj.vidin;
+            triggerconfig(v, 'hardware');
+            v.FramesPerTrigger = 1;
+            v.TriggerRepeat = inf;
+            s = getselectedsource(v);
+            s.TriggerMode = 'On';
+            s.TriggerActivation = 'FallingEdge';
+            set(v, 'TriggerFcn', {@Cam.hardwaretrigger, obj.minstance});
+            start(v);
+        end
         function initCam(obj)
             initCam@Cam(obj);
             obj.vidin.ReturnedColorSpace = 'rgb';
+        end
+        function notesForTriggering
+            v.TriggerMode = 'hardware';
+            v.FramesPerTrigger = 1;
+            v.TriggerRepeat = inf;
+            s = getselectedsource(v);
+            s.TriggerMode = 1;
+            s.TriggerActivation = 'FallingEdge';
+            % after configuring the camera in this way, you can start the
+            % camera and it will take frames whenever it receieves a
+            % trigger.  Later you Stop the camera.  As far as I can tell,
+            % there are no trigger callbacks so you will have to loop stuff
+            % manually probably.
         end
     end
     

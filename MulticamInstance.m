@@ -7,6 +7,7 @@ classdef MulticamInstance < handle
         numID
         currentCamera
         cameras
+        mainDisplayAxes
     end
     
     methods
@@ -15,12 +16,23 @@ classdef MulticamInstance < handle
             obj.numID = f.Number;
             obj.cameras = Cam.listCameras;
             obj.currentCamera = Cam.nullCam;
+            obj.mainDisplayAxes = [];
         end
         function switchCamera(obj, cam)
             %make a function in the camera class that stops and shuts down
             %the current camera
             obj.currentCamera = cam;
+            cam.minstance = obj;
         end
+        function updateImageOutput(obj)
+            img = obj.currentCamera.getCurrentImage();
+            if ~isempty(obj.mainDisplayAxes)
+                axes(obj.mainDisplayAxes)
+                image(img);
+            end
+        end
+        
+        
     end
     
     methods(Static)
@@ -45,10 +57,17 @@ classdef MulticamInstance < handle
         function b = removeInstance(fig)
             hmap = MulticamInstance.manageHMap(fig);
             minstance = hmap(fig.Number);
-            minstance.delete;
+            for c = minstance.cameras
+               stop(c.vidin);
+               delete(c.vidin);
+               clear(c.vidin);
+               delete(c);
+               clear(c);
+            end
+            delete(minstance);
             hmap.remove(fig.Number);
         end
-            
+ 
     end
     
 end
