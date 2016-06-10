@@ -8,6 +8,10 @@ classdef MulticamInstance < handle
         currentCamera
         cameras
         mainDisplayAxes
+        fitXAxes
+        fitYAxes
+        fitType
+        img
     end
     
     methods
@@ -17,6 +21,8 @@ classdef MulticamInstance < handle
             obj.cameras = Cam.listCameras;
             obj.currentCamera = Cam.nullCam;
             obj.mainDisplayAxes = [];
+            obj.fitType = 'gauss1';
+            obj.img = 0;
         end
         function switchCamera(obj, cam)
             %make a function in the camera class that stops and shuts down
@@ -25,11 +31,32 @@ classdef MulticamInstance < handle
             cam.minstance = obj;
         end
         function updateImageOutput(obj)
-            img = obj.currentCamera.getCurrentImage();
+            obj.img = obj.currentCamera.getCurrentImage();
             if ~isempty(obj.mainDisplayAxes)
                 axes(obj.mainDisplayAxes)
-                image(img);
+                image(obj.img);
+                obj.redrawPlots();
             end
+        end
+        function redrawPlots(obj)
+            xdata = ImageProcessing.sumX(obj.img);
+            [x, y] = prepareCurveData([], xdata);
+            f = fit(x, y, obj.fitType);
+            axes(obj.fitXAxes);
+            plot(xdata);
+            hold on
+            plot(f);
+            hold off
+            ydata = ImageProcessing.sumY(obj.img);
+            [x, y] = prepareCurveData([], ydata);
+            f = fit(x, y, obj.fitType);
+            axes(obj.fitYAxes);
+            plot(ydata);
+            hold on
+            plot(f);
+            hold off
+            view(-90, 90);
+            set(gca, 'xdir', 'reverse');
         end
         
         
@@ -57,12 +84,11 @@ classdef MulticamInstance < handle
         function b = removeInstance(fig)
             hmap = MulticamInstance.manageHMap(fig);
             minstance = hmap(fig.Number);
-            for c = minstance.cameras
+            for cam = minstance.cameras
+               c = cam{1};
                stop(c.vidin);
                delete(c.vidin);
-               clear(c.vidin);
                delete(c);
-               clear(c);
             end
             delete(minstance);
             hmap.remove(fig.Number);

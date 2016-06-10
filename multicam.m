@@ -1,4 +1,8 @@
 function varargout = multicam(varargin)
+% MULTICAM is a program written by Marc Davis inspired by EDCAM by Edward
+% Marti.  My email is marc.davis@berkeley.edu.
+
+
 % MULTICAM MATLAB code for multicam.fig
 %      MULTICAM, by itself, creates a new MULTICAM instance.
 %
@@ -20,7 +24,7 @@ function varargout = multicam(varargin)
 
 % Edit the above text to modify the response to help multicam
 
-% Last Modified by GUIDE v2.5 09-Jun-2016 12:35:19
+% Last Modified by GUIDE v2.5 10-Jun-2016 15:14:14
 
     % Begin initialization code - DO NOT EDIT
     gui_Singleton = 0;
@@ -84,6 +88,8 @@ function cameramenu_Callback(hObject, ~, handles)
     minstance = MulticamInstance.instanceForFigure(get(hObject, 'parent'));
     if isempty(minstance.mainDisplayAxes)
        minstance.mainDisplayAxes = handles.mainDisplay;
+       minstance.fitXAxes = handles.fitX;
+       minstance.fitYAxes = handles.fitY;
     end
     i = get(hObject, 'Value');
     if i == 1
@@ -157,4 +163,33 @@ function stopbutton_Callback(hObject, eventdata, handles)
     figg = get(hObject, 'parent');
     minstance = MulticamInstance.instanceForFigure(figg);
     minstance.currentCamera.stopRecording();
+end
+
+
+% --- Executes on selection change in fittype.
+function fittype_Callback(hObject, eventdata, handles)
+% hObject    handle to fittype (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns fittype contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from fittype
+    figg = get(hObject, 'parent');
+    minstance = MulticamInstance.instanceForFigure(figg);
+    i = get(hObject, 'Value');
+    contents = cellstr(get(hObject, 'String'));
+    minstance.fitType = contents{i};
+    minstance.redrawPlots();
+end
+% --- Executes during object creation, after setting all properties.
+function fittype_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to fittype (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: popupmenu controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+    if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+        set(hObject,'BackgroundColor','white');
+    end
 end
