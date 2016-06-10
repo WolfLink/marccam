@@ -98,6 +98,7 @@ function cameramenu_Callback(hObject, ~, handles)
     else
         minstance.switchCamera(minstance.cameras{i - 1});
     end
+    minstance.updateImageOutput();
     disp(minstance.currentCamera)
 end
 

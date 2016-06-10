@@ -17,8 +17,12 @@ classdef GentlCam < Cam
             v.FramesPerTrigger = 1;
             v.TriggerRepeat = inf;
             s = getselectedsource(v);
-            s.TriggerMode = 'On';
-            s.TriggerActivation = 'FallingEdge';
+            if isprop(s, 'TriggerMode')
+                s.TriggerMode = 'On';
+                s.TriggerActivation = 'FallingEdge';
+            elseif isprop(s, 'AcquisitionStartTriggerMode')
+                s.AcquisitionStartTriggerMode = 'On';
+            end
             set(v, 'TriggerFcn', {@Cam.hardwaretrigger, obj.minstance});
             start(v);
         end

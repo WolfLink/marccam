@@ -14,6 +14,7 @@ classdef Cam < handle
         vidin
         serialNumber
         minstance
+        lastimg
     end
     
     methods
@@ -37,8 +38,14 @@ classdef Cam < handle
            if obj.vidin.FramesAvailable > 0
               picture = getdata(obj.vidin, 1); %get the most recent frame
            else
-              picture = obj.takePicture(); %if there are no currently available frames then take a picture now
+               try
+                   picture = obj.takePicture(); %if there are no currently available frames then take a picture now
+               catch e
+                   disp('unable to get an image')
+                   picture = obj.lastimg; %if we are unable to take a new picture, use the previous picture
+               end
            end
+           obj.lastimg = picture;
         end
         
         function images = getFrames(obj, numFrames)
@@ -154,6 +161,7 @@ classdef Cam < handle
         end
         
         function hardwaretrigger(v, e, obj)
+            disp('triggered!')
            obj.updateImageOutput();
         end
         
