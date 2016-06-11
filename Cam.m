@@ -15,6 +15,8 @@ classdef Cam < handle
         serialNumber
         minstance
         lastimg
+        status
+        triggerCount
     end
     
     methods
@@ -24,10 +26,13 @@ classdef Cam < handle
            %override this function to prepare for hardware triggering
         end
         function startRecording(obj)
-           start(obj.vidin); 
+            start(obj.vidin);
+            obj.status.String = 'Waiting for Trigger';
+            obj.triggerCount = 0;
         end
         function stopRecording(obj)
             stop(obj.vidin);
+            obj.status.String = 'Waiting for Start';
         end
         
         function picture = takePicture(obj)
@@ -73,6 +78,7 @@ classdef Cam < handle
         function obj = Cam(adaptor, id)
             obj.AdaptorName = adaptor;
             obj.DeviceID = id;
+            obj.triggerCount = 0;
         end
         function initCam(obj)
             c = imaqhwinfo(obj.AdaptorName, obj.DeviceID);
@@ -143,7 +149,9 @@ classdef Cam < handle
             % the program is running.
             switch name
                 case 'FaceTime HD Camera'
-                    c = FacetimeCam(adaptor, id)
+                    c = FacetimeCam(adaptor, id);
+                case 'Guppy F038B'
+                    c = GuppyF038B(adaptor, id);
                 otherwise
                     c = Cam.camWithAdaptorAndID(adaptor, id);
             end

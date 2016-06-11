@@ -12,6 +12,7 @@ classdef MulticamInstance < handle
         fitYAxes
         fitType
         img
+        statusText
     end
     
     methods
@@ -30,6 +31,8 @@ classdef MulticamInstance < handle
             obj.currentCamera.startRecording();
             obj.currentCamera = cam;
             cam.minstance = obj;
+            obj.statusText.String = 'Waiting for Start';
+            cam.status = obj.statusText;
         end
         function updateImageOutput(obj)
             obj.img = obj.currentCamera.getCurrentImage();
@@ -37,6 +40,8 @@ classdef MulticamInstance < handle
                 axes(obj.mainDisplayAxes)
                 image(obj.img);
                 obj.redrawPlots();
+                obj.currentCamera.triggerCount = obj.currentCamera.triggerCount + 1;
+                obj.statusText.String = sprintf('Frames: %d', obj.currentCamera.triggerCount);
             end
         end
         function redrawPlots(obj)
@@ -44,9 +49,9 @@ classdef MulticamInstance < handle
             [x, y] = prepareCurveData([], xdata);
             f = fit(x, y, obj.fitType);
             axes(obj.fitXAxes);
-            plot(xdata);
-            hold on
             plot(f);
+            hold on
+            plot(xdata);
             hold off
             ydata = ImageProcessing.sumY(obj.img);
             [x, y] = prepareCurveData([], ydata);

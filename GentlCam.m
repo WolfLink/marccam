@@ -13,25 +13,27 @@ classdef GentlCam < Cam
             %set gentl camera to automcatically record based on the
             %hardware trigger
             v = obj.vidin;
+            stop(v);
             triggerconfig(v, 'hardware');
             v.FramesPerTrigger = 1;
             v.TriggerRepeat = inf;
             s = getselectedsource(v);
             if isprop(s, 'TriggerMode')
                 s.TriggerMode = 'On';
-                s.TriggerActivation = 'FallingEdge';
+                s.TriggerActivation = 'RisingEdge';
             elseif isprop(s, 'ExposureStartTriggerMode')
                 s.ExposureStartTriggerMode = 'On';
+                s.ExposureStartTriggerActivation = 'RisingEdge';
             else
                 disp('unable to find proper trigger mode')
                 triggerconfig(v, 'immediate');
             end
             set(v, 'TriggerFcn', {@Cam.hardwaretrigger, obj.minstance});
-            start(v);
+            startRecording@Cam(obj);
         end
         function stopRecording(obj)
             v = obj.vidin;
-            stop(v);
+            stopRecording@Cam(obj);
             triggerconfig(v,'immediate');
             s = getselectedsource(v);
             if isprop(s, 'TriggerMode')
@@ -48,7 +50,7 @@ classdef GentlCam < Cam
             initCam@Cam(obj);
             v = obj.vidin;
             v.ReturnedColorSpace = 'rgb';
-            triggerconfig(v, 'hardware');
+            triggerconfig(v, 'immediate');
             s = getselectedsource(v);
             if isprop(s, 'TriggerMode')
                 s.TriggerMode = 'Off';

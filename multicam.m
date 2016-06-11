@@ -95,7 +95,9 @@ function cameramenu_Callback(hObject, ~, handles)
     if i == 1
         % The default "Select Camera" is selected (no camera is selected)
         minstance.switchCamera(Cam.nullCam);
+        handles.statusText.String = 'No Camera';
     else
+        minstance.statusText = handles.statusText;
         minstance.switchCamera(minstance.cameras{i - 1});
     end
     minstance.updateImageOutput();
