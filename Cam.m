@@ -161,7 +161,6 @@ classdef Cam < handle
         end
         
         function hardwaretrigger(v, e, obj)
-            disp('triggered!')
            obj.updateImageOutput();
         end
         
