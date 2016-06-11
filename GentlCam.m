@@ -33,11 +33,32 @@ classdef GentlCam < Cam
             v = obj.vidin;
             stop(v);
             triggerconfig(v,'immediate');
+            s = getselectedsource(v);
+            if isprop(s, 'TriggerMode')
+                s.TriggerMode = 'Off';
+                s.TriggerActivation = 'FallingEdge';
+            elseif isprop(s, 'ExposureStartTriggerMode')
+                s.ExposureStartTriggerMode = 'Off';
+            else
+                disp('unable to find proper trigger mode')
+                triggerconfig(v, 'immediate');
+            end
         end
         function initCam(obj)
             initCam@Cam(obj);
-            obj.vidin.ReturnedColorSpace = 'rgb';
-            triggerconfig(obj.vidin, 'hardware');
+            v = obj.vidin;
+            v.ReturnedColorSpace = 'rgb';
+            triggerconfig(v, 'hardware');
+            s = getselectedsource(v);
+            if isprop(s, 'TriggerMode')
+                s.TriggerMode = 'Off';
+                s.TriggerActivation = 'FallingEdge';
+            elseif isprop(s, 'ExposureStartTriggerMode')
+                s.ExposureStartTriggerMode = 'Off';
+            else
+                disp('unable to find proper trigger mode')
+                triggerconfig(v, 'immediate');
+            end
         end
         function notesForTriggering
             v.TriggerMode = 'hardware';

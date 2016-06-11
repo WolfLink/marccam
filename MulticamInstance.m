@@ -27,6 +27,7 @@ classdef MulticamInstance < handle
         function switchCamera(obj, cam)
             %make a function in the camera class that stops and shuts down
             %the current camera
+            obj.currentCamera.startRecording();
             obj.currentCamera = cam;
             cam.minstance = obj;
         end
