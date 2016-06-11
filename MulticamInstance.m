@@ -49,9 +49,9 @@ classdef MulticamInstance < handle
             [x, y] = prepareCurveData([], xdata);
             f = fit(x, y, obj.fitType);
             axes(obj.fitXAxes);
-            plot(f);
-            hold on
             plot(xdata);
+            hold on
+            plot(f);
             hold off
             ydata = ImageProcessing.sumY(obj.img);
             [x, y] = prepareCurveData([], ydata);

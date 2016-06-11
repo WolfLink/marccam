@@ -41,16 +41,16 @@ classdef Cam < handle
         
         function picture = getCurrentImage(obj)
            if obj.vidin.FramesAvailable > 0
-              picture = getdata(obj.vidin, 1); %get the most recent frame
+              obj.lastimg = getdata(obj.vidin, 1); %get the most recent frame
            else
                try
-                   picture = obj.takePicture(); %if there are no currently available frames then take a picture now
+                   obj.lastimg = obj.takePicture(); %if there are no currently available frames then take a picture now
                catch e
                    disp('unable to get an image')
-                   picture = obj.lastimg; %if we are unable to take a new picture, use the previous picture
+                   %if we are unable to take a new picture, use the previous picture
                end
            end
-           obj.lastimg = picture;
+           picture = obj.lastimg;
         end
         
         function images = getFrames(obj, numFrames)

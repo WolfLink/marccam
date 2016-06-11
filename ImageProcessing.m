@@ -6,7 +6,11 @@ classdef ImageProcessing
     
     methods(Static)
         function data = sumX(image)
-            image = rgb2gray(image);
+            try
+                image = rgb2gray(image);
+            catch
+                imshow(image)
+            end
             data = sum(image);
         end
         function data = sumY(image)
