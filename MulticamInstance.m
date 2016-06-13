@@ -51,6 +51,23 @@ classdef MulticamInstance < handle
             xdata = ImageProcessing.sumX(obj.img);
             [x, y] = prepareCurveData([], xdata);
             f = fit(x, y, obj.fitType);
+            
+            % the following code is used to display the b values from the
+            % gaussian fit.  These values correspond to the center points
+            % of the peaks that the gaussian fit finds.
+            str = {'X Fit Analysis:'};
+            names = coeffnames(f);
+            vals = coeffvalues(f);
+            s = size(names);
+            for c = 1:s(1)
+                v = vals(c);
+                i = names(c);
+                k = strfind(i, 'b');
+                if ~isempty(k{1})
+                   str{end+1} = char(strcat(i, sprintf(': %f', v)));
+                end
+            end
+            
             axes(obj.fitXAxes);
             plot(xdata);
             hold on
@@ -59,6 +76,21 @@ classdef MulticamInstance < handle
             ydata = ImageProcessing.sumY(obj.img);
             [x, y] = prepareCurveData([], ydata);
             f = fit(x, y, obj.fitType);
+            % more code to output to numouts except this time we are using
+            % the y values
+            str{end+1} = 'Y Fit Analysis';
+            names = coeffnames(f);
+            vals = coeffvalues(f);
+            s = size(names)
+            for c = 1:s(1)
+                v = vals(c);
+                i = names(c);
+                k = strfind(i, 'b');
+                if ~isempty(k{1})
+                   str{end+1} = char(strcat(i, sprintf(': %f', v)));
+                end
+            end
+            
             axes(obj.fitYAxes);
             plot(ydata);
             hold on
@@ -71,24 +103,7 @@ classdef MulticamInstance < handle
             %set(obj.numouts, 'String', {'Hello';'World'});
             %str = matlab.unittest.diagnostics.ConstraintDiagnostic.getDisplayableString(f);
             
-            % the following code is used to display the b values from the
-            % gaussian fit.  These values correspond to the center points
-            % of the peaks that the gaussian fit finds.
-            str = {};
-            names = coeffnames(f);
-            vals = coeffvalues(f);
-            s = size(names)
-            for c = 1:s(1)
-                v = vals(c);
-                i = names(c);
-                k = strfind(i, 'b');
-                b = isempty(k{1})
-                if ~b
-                   disp(k)
-                   disp(sprintf('k is mpty: %d', isempty(k)))
-                   str{end+1} = char(strcat(i, sprintf(': %f', v)));
-                end
-            end
+            
             set(obj.numouts, 'String', str);
         end
  
