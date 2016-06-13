@@ -9,7 +9,7 @@ classdef GuppyF038B < GentlCam
             initCam@GentlCam(obj);
             v = obj.vidin;
             s = getselectedsource(v);
-            s.ExposureTime = 50;
+            s.ExposureTime = 1;
             s.GainRaw = 0;
         end
     end

@@ -13,6 +13,7 @@ classdef MulticamInstance < handle
         fitType
         img
         statusText
+        numouts
     end
     
     methods
@@ -45,6 +46,8 @@ classdef MulticamInstance < handle
             end
         end
         function redrawPlots(obj)
+            % update the graphs that accompany the image and update the
+            % numerical outputs
             xdata = ImageProcessing.sumX(obj.img);
             [x, y] = prepareCurveData([], xdata);
             f = fit(x, y, obj.fitType);
@@ -63,9 +66,32 @@ classdef MulticamInstance < handle
             hold off
             view(-90, 90);
             set(gca, 'xdir', 'reverse');
+            
+            %set(obj.numouts,'String', sprintf('%s',f));
+            %set(obj.numouts, 'String', {'Hello';'World'});
+            %str = matlab.unittest.diagnostics.ConstraintDiagnostic.getDisplayableString(f);
+            
+            % the following code is used to display the b values from the
+            % gaussian fit.  These values correspond to the center points
+            % of the peaks that the gaussian fit finds.
+            str = {};
+            names = coeffnames(f);
+            vals = coeffvalues(f);
+            s = size(names)
+            for c = 1:s(1)
+                v = vals(c);
+                i = names(c);
+                k = strfind(i, 'b');
+                b = isempty(k{1})
+                if ~b
+                   disp(k)
+                   disp(sprintf('k is mpty: %d', isempty(k)))
+                   str{end+1} = char(strcat(i, sprintf(': %f', v)));
+                end
+            end
+            set(obj.numouts, 'String', str);
         end
-        
-        
+ 
     end
     
     methods(Static)

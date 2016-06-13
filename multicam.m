@@ -24,7 +24,7 @@ function varargout = multicam(varargin)
 
 % Edit the above text to modify the response to help multicam
 
-% Last Modified by GUIDE v2.5 10-Jun-2016 15:14:14
+% Last Modified by GUIDE v2.5 13-Jun-2016 14:42:57
 
     % Begin initialization code - DO NOT EDIT
     gui_Singleton = 0;
@@ -195,4 +195,31 @@ function fittype_CreateFcn(hObject, eventdata, handles)
     if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
         set(hObject,'BackgroundColor','white');
     end
+end
+
+
+% --- Executes on selection change in numouts.
+function numouts_Callback(hObject, eventdata, handles)
+% hObject    handle to numouts (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: contents = cellstr(get(hObject,'String')) returns numouts contents as cell array
+%        contents{get(hObject,'Value')} returns selected item from numouts
+
+end
+% --- Executes during object creation, after setting all properties.
+function numouts_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to numouts (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: listbox controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+    if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+        set(hObject,'BackgroundColor','white');
+    end
+    figg = get(hObject, 'parent');
+    minstance = MulticamInstance.instanceForFigure(figg);
+    minstance.numouts = hObject;
 end
