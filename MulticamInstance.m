@@ -67,9 +67,11 @@ classdef MulticamInstance < handle
                    str{end+1} = char(strcat(i, sprintf(': %f', v)));
                 end
             end
-            
+            s = size(xdata)
             axes(obj.fitXAxes);
             plot(xdata);
+            axis manual
+            axis([0,s(2), min(xdata), max(xdata)]);
             hold on
             plot(f);
             hold off
@@ -81,7 +83,7 @@ classdef MulticamInstance < handle
             str{end+1} = 'Y Fit Analysis';
             names = coeffnames(f);
             vals = coeffvalues(f);
-            s = size(names)
+            s = size(names);
             for c = 1:s(1)
                 v = vals(c);
                 i = names(c);
@@ -90,9 +92,11 @@ classdef MulticamInstance < handle
                    str{end+1} = char(strcat(i, sprintf(': %f', v)));
                 end
             end
-            
+            s = size(ydata)
             axes(obj.fitYAxes);
             plot(ydata);
+            axis manual
+            axis([0,s(2),min(ydata),max(ydata)]);
             hold on
             plot(f);
             hold off
