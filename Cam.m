@@ -150,7 +150,7 @@ classdef Cam < handle
             switch name
                 case 'FaceTime HD Camera'
                     c = FacetimeCam(adaptor, id);
-                case 'Guppy F038B'
+                case 'AVT Guppy F038B NIR'
                     c = GuppyF038B(adaptor, id);
                 otherwise
                     c = Cam.camWithAdaptorAndID(adaptor, id);
