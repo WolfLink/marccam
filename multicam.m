@@ -1,4 +1,4 @@
-function varargout = multicam(varargin)
+ function varargout = multicam(varargin)
 % MULTICAM is a program written by Marc Davis inspired by EDCAM by Edward
 % Marti.  My email is marc.davis@berkeley.edu.
 
@@ -11,14 +11,11 @@ function varargout = multicam(varargin)
 %      MULTICAM('CALLBACK',hObject,eventData,handles,...) calls the local
 %      function named CALLBACK in MULTICAM.M with the given input arguments.
 %
-%      MULTICAM('Property','Value',...) creates a new MULTICAM or raises the
-%      existing singleton*.  Starting from the left, property value pairs are
+%      MULTICAM('Property','Value',...) creates a new MULTICAM.  Starting 
+%      from the left, property value pairs are
 %      applied to the GUI before multicam_OpeningFcn gets called.  An
 %      unrecognized property name or invalid value makes property application
 %      stop.  All inputs are passed to multicam_OpeningFcn via varargin.
-%
-%      *See GUI Options on GUIDE's Tools menu.  Choose "GUI allows only one
-%      instance to run (singleton)".
 %
 % See also: GUIDE, GUIDATA, GUIHANDLES
 
@@ -44,11 +41,14 @@ function varargout = multicam(varargin)
         gui_mainfcn(gui_State, varargin{:});
     end
     % End initialization code - DO NOT EDIT
-end
+ end
 
+% Suppress "Function unused" warnings.  GUIDE callback code often has these
+% warning.
+%#ok<*DEFNU>
 
 % --- Executes just before multicam is made visible.
-function multicam_OpeningFcn(hObject, eventdata, handles, varargin)
+function multicam_OpeningFcn(hObject, ~, handles, varargin)
 % This function has no output args, see OutputFcn.
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -66,7 +66,7 @@ guidata(hObject, handles);
 end
 
 % --- Outputs from this function are returned to the command line.
-function varargout = multicam_OutputFcn(hObject, eventdata, handles) 
+function varargout = multicam_OutputFcn(~, ~, handles) 
 % varargout  cell array for returning output args (see VARARGOUT);
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -137,7 +137,7 @@ end
 
 
 % --- Executes on button press in takePictureButton.
-function takePictureButton_Callback(hObject, eventdata, handles)
+function takePictureButton_Callback(hObject, ~, ~)
 % hObject    handle to takePictureButton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
@@ -148,7 +148,7 @@ end
 
 
 % --- Executes on button press in startbutton.
-function startbutton_Callback(hObject, eventdata, handles)
+function startbutton_Callback(hObject, ~, ~)
 % hObject    handle to startbutton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
@@ -159,7 +159,7 @@ function startbutton_Callback(hObject, eventdata, handles)
 end
 
 % --- Executes on button press in stopbutton.
-function stopbutton_Callback(hObject, eventdata, handles)
+function stopbutton_Callback(hObject, ~, ~)
 % hObject    handle to stopbutton (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
@@ -170,7 +170,7 @@ end
 
 
 % --- Executes on selection change in fittype.
-function fittype_Callback(hObject, eventdata, handles)
+function fittype_Callback(hObject, ~, ~)
 % hObject    handle to fittype (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
@@ -181,11 +181,11 @@ function fittype_Callback(hObject, eventdata, handles)
     minstance = MulticamInstance.instanceForFigure(figg);
     i = get(hObject, 'Value');
     contents = cellstr(get(hObject, 'String'));
-    minstance.fitType = contents{i};
+    minstance.changeFitType(contents{i});
     minstance.redrawPlots();
 end
 % --- Executes during object creation, after setting all properties.
-function fittype_CreateFcn(hObject, eventdata, handles)
+function fittype_CreateFcn(hObject, ~, ~)
 % hObject    handle to fittype (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
@@ -199,17 +199,24 @@ end
 
 
 % --- Executes on selection change in numouts.
-function numouts_Callback(hObject, eventdata, handles)
+function numouts_Callback(hObject, ~, ~)
 % hObject    handle to numouts (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 
 % Hints: contents = cellstr(get(hObject,'String')) returns numouts contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from numouts
-
+    %items = get(hObject,'String');
+    index_selected = get(hObject,'Value');
+    %item_selected = items{index_selected};
+    %display(item_selected);
+    
+    figg = get(hObject, 'parent');
+    minstance = MulticamInstance.instanceForFigure(figg);
+    minstance.changeSelectedData(index_selected);
 end
 % --- Executes during object creation, after setting all properties.
-function numouts_CreateFcn(hObject, eventdata, handles)
+function numouts_CreateFcn(hObject, ~, ~)
 % hObject    handle to numouts (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
@@ -226,7 +233,7 @@ end
 
 
 % --- Executes on selection change in detailOutput.
-function detailOutput_Callback(hObject, eventdata, handles)
+function detailOutput_Callback(~, ~, ~)
 % hObject    handle to detailOutput (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
@@ -236,7 +243,7 @@ function detailOutput_Callback(hObject, eventdata, handles)
 
 end
 % --- Executes during object creation, after setting all properties.
-function detailOutput_CreateFcn(hObject, eventdata, handles)
+function detailOutput_CreateFcn(hObject, ~, ~)
 % hObject    handle to detailOutput (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called

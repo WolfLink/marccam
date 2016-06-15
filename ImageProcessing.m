@@ -18,29 +18,12 @@ classdef ImageProcessing
            image = transpose(image);
            data = sum(image);
         end
-        function fillPlots(img, xplot, yplot, numouts, fitType)
-            if strcmp(fitType, 'gauss+')
-               fitType = 'a1*exp(-((x-b1)/c1)^2)+d1';
-            end
+        
+        function fillPlots(img, xplot, yplot, fitTrack)
+            fitType = fitTrack.fitType;
             xdata = ImageProcessing.sumX(img);
-            [x, y] = prepareCurveData([], xdata);
-            f = fit(x, y, fitType);
-            
-            % the following code is used to display the b values from the
-            % gaussian fit.  These values correspond to the center points
-            % of the peaks that the gaussian fit finds.
-            str = {'X Fit Analysis:'};
-            names = coeffnames(f);
-            vals = coeffvalues(f);
-            s = size(names);
-            for c = 1:s(1)
-                v = vals(c);
-                i = names(c);
-                k = strfind(i, 'b');
-                if ~isempty(k{1})
-                   str{end+1} = char(strcat(i, sprintf(': %f', v)));
-                end
-            end
+            f = ImageProcessing.fitWithDataAndType(xdata, fitType);
+            fitTrack.xFit = f;
             s = size(xdata);
             axes(xplot);
             plot(xdata);
@@ -50,22 +33,9 @@ classdef ImageProcessing
             plot(f);
             hold off
             ydata = ImageProcessing.sumY(img);
-            [x, y] = prepareCurveData([], ydata);
-            f = fit(x, y, fitType);
-            % more code to output to numouts except this time we are using
-            % the y values
-            str{end+1} = 'Y Fit Analysis';
-            names = coeffnames(f);
-            vals = coeffvalues(f);
-            s = size(names);
-            for c = 1:s(1)
-                v = vals(c);
-                i = names(c);
-                k = strfind(i, 'b');
-                if ~isempty(k{1})
-                   str{end+1} = char(strcat(i, sprintf(': %f', v)));
-                end
-            end
+            f = ImageProcessing.fitWithDataAndType(ydata, fitType);
+            fitTrack.yFit = f;
+            
             s = size(ydata);
             axes(yplot);
             plot(ydata);
@@ -77,12 +47,21 @@ classdef ImageProcessing
             view(-90, 90);
             set(gca, 'xdir', 'reverse');
             
-            %set(obj.numouts,'String', sprintf('%s',f));
-            %set(obj.numouts, 'String', {'Hello';'World'});
-            %str = matlab.unittest.diagnostics.ConstraintDiagnostic.getDisplayableString(f);
             
-            
-            set(numouts, 'String', str); 
+            fitTrack.updateNumouts();
+        end
+    end
+    
+    methods(Static)
+        function f = fitWithDataAndType(data, fitType)
+            [x, y] = prepareCurveData([], data);
+            if strcmp(fitType, 'gauss+')
+               fitType = 'a1*exp(-((x-b1)/c1)^2)+d1';
+               [m,i] = max(data);
+               f = fit(x, y, fitType, 'StartPoint', [m,i,1,0]);
+            else
+                f = fit(x, y, fitType);
+            end
         end
     end
 end

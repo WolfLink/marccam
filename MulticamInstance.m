@@ -10,11 +10,12 @@ classdef MulticamInstance < handle
         mainDisplayAxes
         fitXAxes
         fitYAxes
-        fitType
         img
         statusText
         numouts
         detailouts
+        selectedNumout
+        fitTrack
     end
     
     methods
@@ -24,8 +25,9 @@ classdef MulticamInstance < handle
             obj.cameras = Cam.listCameras;
             obj.currentCamera = Cam.nullCam;
             obj.mainDisplayAxes = [];
-            obj.fitType = 'gauss1';
+            obj.fitTrack = FitTracker('gauss+');
             obj.img = 0;
+            obj.selectedNumout = 1;
         end
         function switchCamera(obj, cam)
             %make a function in the camera class that stops and shuts down
@@ -49,7 +51,18 @@ classdef MulticamInstance < handle
         function redrawPlots(obj)
             % update the graphs that accompany the image and update the
             % numerical outputs
-            ImageProcessing.fillPlots(obj.img, obj.fitXAxes, obj.fitYAxes, obj.numouts, obj.fitType);
+            obj.fitTrack.numouts = obj.numouts;
+            obj.fitTrack.detailouts = obj.detailouts;
+            ImageProcessing.fillPlots(obj.img, obj.fitXAxes, obj.fitYAxes, obj.fitTrack);
+            obj.fitTrack.displayDetails(obj.selectedNumout);
+        end
+        function changeSelectedData(obj, dat)
+            obj.selectedNumout = dat;
+            obj.fitTrack.displayDetails(dat);
+        end
+        function changeFitType(obj, fitType)
+           delete(obj.fitTrack);
+           obj.fitTrack = FitTracker(fitType);
         end
  
     end
@@ -73,7 +86,7 @@ classdef MulticamInstance < handle
                 hmap(num) = i;
             end
         end
-        function b = removeInstance(fig)
+        function removeInstance(fig)
             hmap = MulticamInstance.manageHMap(fig);
             minstance = hmap(fig.Number);
             for cam = minstance.cameras
