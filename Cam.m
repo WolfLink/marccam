@@ -28,7 +28,7 @@ classdef Cam < handle
         function startRecording(obj)
             start(obj.vidin);
             obj.status.String = 'Waiting for Trigger';
-            obj.triggerCount = 0;
+            obj.triggerCount = Inf;
         end
         function stopRecording(obj)
             stop(obj.vidin);
