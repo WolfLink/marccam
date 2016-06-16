@@ -114,15 +114,21 @@ classdef ImageProcessing
                img = rgb2gray(img);
            end
            data = sum(img);
-           [~, i] = sort(data);
+           rindices = randperm(size(data,2));
+           %rdata(rindices) = data;
+           [~, i] = sort(rdata); %has an issue with all black images
+           %i = rindices(i);
            sd = std([i(end), i(end-1), i(end-2),i(end-3),i(end-4)]); %take the standard devition of the x positions of the 5 brightest columns
+           disp(sd)
+           disp(size(img))
+           disp(size(i))
+           disp([i(end), i(end-1), i(end-2), i(end-3), i(end-4)])
            if sd > size(img,2) / 30
                b = 1; %if the brightest columns are very spread compared to the size of the image, then the image must be blank
            else
                b = 0; %if the brightest columns are clustered compared to the size of the image, then the image must have content.
            end
         end
-        
         
     end
 end
