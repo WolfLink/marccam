@@ -49,7 +49,7 @@ classdef GentlCam < Cam
         function initCam(obj)
             initCam@Cam(obj);
             v = obj.vidin;
-            v.ReturnedColorSpace = 'rgb';
+            v.ReturnedColorSpace = 'grayscale';
             triggerconfig(v, 'immediate');
             s = getselectedsource(v);
             if isprop(s, 'TriggerMode')
@@ -62,19 +62,7 @@ classdef GentlCam < Cam
                 triggerconfig(v, 'immediate');
             end
         end
-        function notesForTriggering
-            v.TriggerMode = 'hardware';
-            v.FramesPerTrigger = 1;
-            v.TriggerRepeat = inf;
-            s = getselectedsource(v);
-            s.TriggerMode = 1;
-            s.TriggerActivation = 'FallingEdge';
-            % after configuring the camera in this way, you can start the
-            % camera and it will take frames whenever it receieves a
-            % trigger.  Later you Stop the camera.  As far as I can tell,
-            % there are no trigger callbacks so you will have to loop stuff
-            % manually probably.
-        end
+        
     end
     
 end

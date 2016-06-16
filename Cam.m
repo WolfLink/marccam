@@ -53,22 +53,6 @@ classdef Cam < handle
            picture = obj.lastimg;
         end
         
-        function images = getFrames(obj, numFrames)
-            %NOTE: This function was taken from edcam and could be improved
-            %upon
-            obj.vidin.TriggerRepeat = numFrames - 1;
-            start(obj.vidin);
-            wait(obj.vidin, 100);
-            images = zeros(720, 1280, numFrames);
-            %if obj.vidin.FramesAvailable == numFrames
-                for i = 1 : numFrames
-                    images(:,:,i) = getdata(obj.vidin);
-                end
-            %else
-            %    images = 0;
-            %end
-        end
-        
         function props = getCameraProperties(obj)
            %use the output of this function for writing custom subclasses for cameras
            props = get(obj.vidin);

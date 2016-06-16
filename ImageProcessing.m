@@ -6,15 +6,23 @@ classdef ImageProcessing
     
     methods(Static)
         function data = sumX(image)
-            try
-                image = rgb2gray(image);
-            catch
-                imshow(image)
+            if size(image,3) > 1
+                try
+                    image = rgb2gray(image);
+                catch
+                    imshow(image)
+                end
             end
             data = sum(image);
         end
         function data = sumY(image)
-           image = rgb2gray(image);
+           if size(image,3) > 1
+                try
+                    image = rgb2gray(image);
+                catch
+                    imshow(image)
+                end
+           end
            image = transpose(image);
            data = sum(image);
         end
