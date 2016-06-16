@@ -27,7 +27,7 @@ classdef MulticamInstance < handle
             obj.mainDisplayAxes = [];
             obj.fitTrack = FitTracker('gauss+');
             obj.img = 0;
-            obj.selectedNumout = 1;
+            obj.selectedNumout = 2;
         end
         function switchCamera(obj, cam)
             %make a function in the camera class that stops and shuts down
@@ -40,6 +40,9 @@ classdef MulticamInstance < handle
         end
         function updateImageOutput(obj)
             obj.img = obj.currentCamera.getCurrentImage();
+            if size(obj.img,3) == 1
+               obj.img = ind2rgb(obj.img, jet(256)); 
+            end
             if ~isempty(obj.mainDisplayAxes)
                 axes(obj.mainDisplayAxes)
                 image(obj.img);
@@ -63,6 +66,9 @@ classdef MulticamInstance < handle
         function changeFitType(obj, fitType)
            delete(obj.fitTrack);
            obj.fitTrack = FitTracker(fitType);
+           set(obj.numouts, 'Value', 2);
+           set(obj.detailouts, 'Value', 1);
+           obj.selectedNumout = 2;
         end
  
     end
