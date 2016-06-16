@@ -84,6 +84,13 @@ classdef ImageProcessing
                 b = 1; %image is blank
             end
         end
+        function b = threshold(img, v)
+            if sum(sum(img)) > 200000
+                b = 1;
+            else
+                b = 0;
+            end
+        end
         
         
     end
