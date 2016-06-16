@@ -80,17 +80,21 @@ classdef ImageProcessing
             %Detects whether the image is empty (monocolored) or has
             %something interesting.  Returns 1 if the image is blank and 0
             %if the image has content.
-            if size(img, 3) > 1
-                img = rgb2gray(img);
-            end
-            mama = max(max(img));
-            masu = max(sum(img));
-            misu = min(sum(img));
-            if masu - misu > 3 * mama
-                b = 0; %image has content
-            else
-                b = 1; %image is blank
-            end
+
+            
+            b = ImageProcessing.maxCluster(img);
+            
+            %if size(img, 3) > 1
+            %    img = rgb2gray(img);
+            %end
+            %mama = max(max(img));
+            %masu = max(sum(img));
+            %misu = min(sum(img));
+            %if masu - misu > 3 * mama
+            %    b = 0; %image has content
+            %else
+            %    b = 1; %image is blank
+            %end
         end
         function b = threshold(img, v)
             %Applies a threshold to the total value of the image.  This is
@@ -100,6 +104,23 @@ classdef ImageProcessing
             else
                 b = 0;
             end
+        end
+        function b = maxCluster(img)
+           % An algorithm designed to detect whether the image or blank or
+           % not.  It finds the 5 brightest columns of the image, computes
+           % the standard deviation of their indexes, and comapares that
+           % value to the width of the image.
+           if size(img, 3) >  1
+               img = rgb2gray(img);
+           end
+           data = sum(img);
+           [~, i] = sort(data);
+           sd = std([i(end), i(end-1), i(end-2),i(end-3),i(end-4)]); %take the standard devition of the x positions of the 5 brightest columns
+           if sd > size(img,2) / 30
+               b = 1; %if the brightest columns are very spread compared to the size of the image, then the image must be blank
+           else
+               b = 0; %if the brightest columns are clustered compared to the size of the image, then the image must have content.
+           end
         end
         
         
