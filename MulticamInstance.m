@@ -41,7 +41,8 @@ classdef MulticamInstance < handle
         function updateImageOutput(obj)
             obj.img = obj.currentCamera.getCurrentImage();
             if size(obj.img,3) == 1
-               obj.img = ind2rgb(obj.img, jet(256)); 
+               %obj.img = ind2rgb(obj.img, jet(256)); the default colormap
+               %seems to work better (?)
             end
             if ~isempty(obj.mainDisplayAxes)
                 axes(obj.mainDisplayAxes)
