@@ -8,38 +8,52 @@ classdef Cam < handle
     %   getting data from the camera.
     
     properties
-        AdaptorName
-        DeviceID
-        DeviceName
-        vidin
-        serialNumber
-        minstance
-        lastimg
-        status
-        triggerCount
+        AdaptorName %The name of the Adaptor matlab uses to communicate with the camera
+        DeviceID %The number used by matlab to identify the camera.
+        DeviceName %The name of the device as reported by imaqhwinfo
+        vidin %The handle to the videoinput object that corresponds to the represented camera
+        serialNumber %The serial number of the represented camera or the DeviceID if the camera does not report a serial number (such as with FaceTime cameras)
+        minstance %the handle to the multicaminstance that this instance of Cam belongs to
+        lastimg %The last recorded image.  It is used when an error prevents the class from getting a new image.
+        status %A handle to the statusText object of the corresponding multicaminstance
+        triggerCount %the number of triggers recieved since the last time triggering was started
     end
     
     methods
         % camera management functions
         function arm(obj)
-           obj.vidin =  videoinput(obj.AdaptorName, obj.DeviceID); %This should work most of the time but if your camera needs specific settings, write a subclass.
-           %override this function to prepare for hardware triggering
+           obj.vidin =  videoinput(obj.AdaptorName, obj.DeviceID);
+           %This should work most of the time but if your camera needs 
+           %specific settings, write a subclass.
+           %    Override this function to prepare for hardware triggering.
+           %    See GentlCam for an example.
         end
         function startRecording(obj)
+            %Starts the videoinput object, updates the status, and sets
+            %triggerCount to 0.  You may want to ovverride this function in
+            %a subclass for certain situations such as hardware triggering.
             start(obj.vidin);
             obj.status.String = 'Waiting for Trigger';
             obj.triggerCount = 0;
         end
         function stopRecording(obj)
+            %Stops the videoinput object and updates the status.  You may
+            %want to override this function in a subclass for certain
+            %situations such as hardware triggering.
             stop(obj.vidin);
             obj.status.String = 'Waiting for Start';
         end
         
         function picture = takePicture(obj)
+           %Takes a quick picture.  This function may not work when the
+           %camera is configured in certain ways such as for hardware
+           %triggering.  You may want to override this function in those
+           %situations.
            picture = getsnapshot(obj.vidin);
         end
         
         function picture = getCurrentImage(obj)
+           %Returns the last picture taken or takes a new one.
            if obj.vidin.FramesAvailable > 0
               obj.lastimg = getdata(obj.vidin, 1); %get the most recent frame
            else
@@ -54,11 +68,11 @@ classdef Cam < handle
         end
         
         function props = getCameraProperties(obj)
-           %use the output of this function for writing custom subclasses for cameras
+           %Use the output of this function for writing custom subclasses for cameras
            props = get(obj.vidin);
         end
             
-        % constructors and constructor-like functions
+        % Constructors and constructor-like functions
         function obj = Cam(adaptor, id)
             obj.AdaptorName = adaptor;
             obj.DeviceID = id;
@@ -81,7 +95,7 @@ classdef Cam < handle
     end
     
     methods(Static)
-        function obj = nullCam()
+        function obj = nullCam() %used to represent the lack of a camera when no camera is selected
             persistent nullc;
             if isempty(nullc)
                 nullc = NullCam();
@@ -89,7 +103,7 @@ classdef Cam < handle
             obj = nullc;
         end
         
-        function cameras = listCameras()
+        function cameras = listCameras() %Returns a list of camera objects for all detected cameras.  This is called when creating a new multicaminstance.
             cameras = {};
             dict = imaqhwinfo;
             for a = dict.InstalledAdaptors
@@ -104,7 +118,7 @@ classdef Cam < handle
                     
         end
         
-        function findCameras()
+        function findCameras() %Finds all cameras matlab can detect and prints information about them.
            dict = imaqhwinfo;
            for a = dict.InstalledAdaptors
                bs = imaqhwinfo(char(a));
@@ -117,7 +131,7 @@ classdef Cam < handle
            end
         end
         
-        function previewAllCameras()
+        function previewAllCameras() %Opens preview windows for all cameras matlab can detect.  The preview windows may not work for certain cameras.
             cams = Cam.listCameras;
             for cam = cams
                 vid = videoinput(cam.AdaptorName, cam.DeviceID); %#ok<TNMLP> %supressed video api usage warning here
@@ -127,10 +141,9 @@ classdef Cam < handle
         
         
         function c = camWithProperties(adaptor, name, id)
-            % Use this swtich statement to identify specif cameras and
+            % Use this swtich statement to identify specific cameras and
             % identify custom classes written for them.  This function gets
-            % called by listCameras and is therefore used by multicam when
-            % the program is running.
+            % called by listCameras and is therefore used by multicam.
             switch name
                 case 'FaceTime HD Camera'
                     c = FacetimeCam(adaptor, id);
@@ -153,6 +166,8 @@ classdef Cam < handle
         end
         
         function hardwaretrigger(v, e, obj)
+           %Update the current image when the camera recieves a hardware
+           %trigger.
            obj.updateImageOutput();
         end
         

@@ -1,5 +1,7 @@
 classdef GuppyF038B < GentlCam
-    %GUPPYF038B A customized class for GuppyF038B (AKA Guppy 530) in E5
+    %GUPPYF038B A customized class for GuppyF038B (AKA Guppy 530) in E5.
+    %It inherits from GentlCam since the GuppyF038B uses the gentl adaptor
+    %to communicate with matlab.
     
     properties
     end

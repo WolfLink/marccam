@@ -1,5 +1,5 @@
 classdef NullCam < Cam
-    %NULLCAM A class that represents a null camera.
+    %NULLCAM A class that represents the lack of a camera.
     %   When no camera is selected, this class gets used.
     
     properties
@@ -16,7 +16,7 @@ classdef NullCam < Cam
            picture = obj.takePicture(); 
         end
         function picture = takePicture(~)
-           picture = 0; %maybe put a sample picture here at some point
+           picture = 0;
         end
         function obj = NullCam()
             obj@Cam('none',0);

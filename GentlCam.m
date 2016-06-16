@@ -1,6 +1,11 @@
 classdef GentlCam < Cam
-    %GENTLCAM Summary of this class goes here
-    %   Detailed explanation goes here
+    %GENTLCAM A subclass of Cam designed to accomadate the best settings
+    %for most cases with a camera that uses gentl.
+    %   The GentlCam automatically sets up the attached camera for hardware
+    %   triggering and default settings.
+    
+    %   Rather than modifying this class, if you need to customize your own
+    %   gentl camera, create a subclass like GuppyF038B.m.
     
     properties
     end
