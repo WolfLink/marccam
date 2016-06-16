@@ -58,9 +58,6 @@ classdef ImageProcessing
             
             fitTrack.updateNumouts();
         end
-    end
-    
-    methods(Static)
         function f = fitWithDataAndType(data, fitType)
             [x, y] = prepareCurveData([], data);
             if strcmp(fitType, 'gauss+')
@@ -71,5 +68,23 @@ classdef ImageProcessing
                 f = fit(x, y, fitType);
             end
         end
+        function b = detectBlank(img)
+            % if the difference between the brightest line and the darkest
+            % line is more than just a few brighter-than-average pixels,
+            % then the image contains something interesting.
+            if size(img, 3) > 1
+                img = rgb2gray(img);
+            end
+            mama = max(max(img));
+            masu = max(sum(img));
+            misu = min(sum(img));
+            if masu - misu > 3 * mama
+                b = 0; %image has content
+            else
+                b = 1; %image is blank
+            end
+        end
+        
+        
     end
 end

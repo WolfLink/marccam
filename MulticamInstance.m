@@ -46,9 +46,13 @@ classdef MulticamInstance < handle
             if ~isempty(obj.mainDisplayAxes)
                 axes(obj.mainDisplayAxes)
                 image(obj.img);
-                obj.redrawPlots();
-                obj.currentCamera.triggerCount = obj.currentCamera.triggerCount + 1;
-                obj.statusText.String = sprintf('Frames: %d', obj.currentCamera.triggerCount);
+                if ImageProcessing.detectBlank(obj.img)
+                    obj.statusText.String = 'Blank Image Detected';
+                else
+                    obj.redrawPlots();
+                    obj.currentCamera.triggerCount = obj.currentCamera.triggerCount + 1;
+                    obj.statusText.String = sprintf('Frames: %d', obj.currentCamera.triggerCount);
+                end
             end
         end
         function redrawPlots(obj)
