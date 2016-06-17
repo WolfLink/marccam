@@ -27,7 +27,7 @@ classdef MulticamInstance < handle
             obj.cameras = Cam.listCameras;
             obj.currentCamera = Cam.nullCam;
             obj.mainDisplayAxes = [];
-            obj.fitTrack = FitTracker('gauss+');
+            obj.fitTrack = FitTracker('gauss1+');
             obj.img = 0;
             obj.selectedNumout = 2;
         end

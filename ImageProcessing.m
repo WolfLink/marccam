@@ -68,12 +68,25 @@ classdef ImageProcessing
             %Applies a fit of the given type to the given data and returns
             %the results.
             [x, y] = prepareCurveData([], data);
-            if strcmp(fitType, 'gauss+')
-               fitType = 'a1*exp(-((x-b1)/c1)^2)+d1';
-               [m,i] = max(data);
-               f = fit(x, y, fitType, 'StartPoint', [m,i,1,0]);
-            else
-                f = fit(x, y, fitType);
+            switch fitType
+                case 'gauss1+'
+                    fitType = 'a1*exp(-((x-b1)/c1)^2)+d1';
+                    [m,i] = max(data);
+                    f = fit(x, y, fitType, 'StartPoint', [m,i,1,0]);
+                case 'gauss2+'
+                    fitType = 'a1*exp(-((x-b1)/c1)^2)+a2*exp(-((x-b2)/c2)^2)+d1';
+                    [m,i] = max(data);
+                    f = fit(x, y, fitType, 'StartPoint', [m,i,1,m,i,1,0]);
+                case 'gauss3+'
+                    fitType = 'a1*exp(-((x-b1)/c1)^2)+a2*exp(-((x-b2)/c2)^2)+a3*exp(-((x-b3)/c3)^2)+d1';
+                    [m,i] = max(data);
+                    f = fit(x, y, fitType, 'StartPoint', [m,i,1,m,i,1,m,i,1,0]);
+                case 'gauss4+'
+                    fitType = 'a1*exp(-((x-b1)/c1)^2)+a2*exp(-((x-b2)/c2)^2)+a3*exp(-((x-b3)/c3)^2)+a4*exp(-((x-b4)/c4)^2)+d1';
+                    [m,i] = max(data);
+                    f = fit(x, y, fitType, 'StartPoint', [m,i,1,m,i,1,m,i,1,m,i,1,0]);
+                otherwise
+                    f = fit(x,y,fitType);
             end
         end
         function b = detectBlank(img)
