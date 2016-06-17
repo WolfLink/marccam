@@ -17,7 +17,7 @@ classdef MulticamInstance < handle
         numouts %a listbox that gives data from the analysis of the x and y graphs
         detailouts %a listbox that gives more detailed data on a selected item from numouts
         selectedNumout %the currently selected item from numouts that detailouts give info on
-        fitTrack
+        fitTrack %an instance of the FitTrack class used to track changes in fit parameters
     end
     
     methods
@@ -38,6 +38,7 @@ classdef MulticamInstance < handle
             cam.minstance = obj;
             obj.statusText.String = 'Waiting for Start';
             cam.status = obj.statusText;
+            obj.changeFitType(obj.fitTrack.fitType); %reset the fit track
         end
         function updateImageOutput(obj)
             %get the current image from the camera and display it
@@ -80,6 +81,7 @@ classdef MulticamInstance < handle
            set(obj.numouts, 'Value', 2);
            set(obj.detailouts, 'Value', 1);
            obj.selectedNumout = 2;
+           obj.fitTrack.logger = DataLogger(sprintf('%s %d', obj.currentCamera.DeviceName, obj.currentCamera.serialNumber));
         end
  
     end

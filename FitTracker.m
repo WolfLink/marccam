@@ -19,6 +19,7 @@ classdef FitTracker < handle
         numouts %the handle to the numouts that corresponds to this instance of multicaminstance
         detailouts %the handle to the detailouts that corresponds to this instance of multicaminstance
         callbacktrack %a list of data to be displayed when a certain item in numouts is selected
+        logger %an instance of the DataLogger class to write tracked data to a file
     end
     
     methods
@@ -56,6 +57,8 @@ classdef FitTracker < handle
                 k = strfind(i, 'b');
                 if ~isempty(k{1}) %filter for only the b values
                    str{end + 1} = char(strcat(i, sprintf(': %f', v)));
+                   
+                   obj.logger.storedx = v; %store the value for printing later
                    
                    %Create a new list of data or add to the current list of
                    %data for the corresponding variable.  This data will be
@@ -97,6 +100,8 @@ classdef FitTracker < handle
                 if ~isempty(k{1}) %filter for only the b values
                    str{end + 1} = char(strcat(i, sprintf(': %f', v)));
                    
+                   obj.logger.storedy = v; %store the value for printing later
+                   
                    %Create a new list of data or add to the current list of
                    %data for the corresponding variable.  This data will be
                    %displayed in detailouts when the corresponding
@@ -113,6 +118,9 @@ classdef FitTracker < handle
                 end
             end
             set(obj.numouts, 'String', str);
+            if strcmp(obj.fitType, 'gauss1+')
+               obj.logger.writeTrackEntry(); %logging only supported for gauss1+ for now
+            end
         end
         
         
