@@ -82,7 +82,7 @@ classdef ImageProcessing
             %if the image has content.
 
             
-            b = ImageProcessing.maxCluster(img);
+            b = ImageProcessing.linearFitter(img);
             
             %if size(img, 3) > 1
             %    img = rgb2gray(img);
@@ -128,6 +128,30 @@ classdef ImageProcessing
            else
                b = 0; %if the brightest columns are clustered compared to the size of the image, then the image must have content.
            end
+        end
+        
+        function b = linearFitter(img)
+            %An algorithm designed to detect blank images by seeing how
+            %well the image matches a constant fit.  If the data matches a
+            %constant fit well then we are looking at noise with no clear
+            %signals.
+            if size(img, 3) >  1
+               img = rgb2gray(img);
+            end
+            d = sum(img);
+            [x,y] = prepareCurveData([], d);
+            f = fit(x, y, 'x*0 + a1', 'StartPoint', 0);
+            c = confint(f, 0.99);
+            disp(c(2) - c(1));
+            disp(size(img,1)/10);
+            %disp(max(d)/100);
+            v = c(2) - c(1);
+            %if v > max(d) / 100
+            if v > size(img, 1)/10
+                b = 0; %if there is a large difference between the confidence interval bounds, then the image has content
+            else
+                b = 1; %if there is not much difference between the confidence interval bounds, then the image is blank.
+            end
         end
         
     end
