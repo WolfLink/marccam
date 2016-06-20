@@ -4,24 +4,38 @@ classdef DataLogger < handle
     
     properties
         stringid
-        fileid
-        
-        storedx
-        storedy
+        fname
+        fid
+        vals
+        names
     end
     
     methods
         function obj = DataLogger(id)
             obj.stringid = id;
-            fname = sprintf('Log %s %s.txt', id, char(datetime('now', 'Format', 'yyyy-MM-dd')));
-            e = exist(fname, 'file');
-            obj.fileid = fopen(fname,'a+');
-            if ~e
-                fprintf(obj.fileid, 'X,Y,TIME');
-            end
+            obj.fname = sprintf('Log %s %s.csv', id, char(datetime('now', 'Format', 'yyyy-MM-dd')));
         end
         function writeTrackEntry(obj)
-            fprintf(obj.fileid, '\n%f,%f,%s', obj.storedx, obj.storedy, char(datetime('now', 'Format', 'HH:mm:ss')));
+            e = exist(obj.fname, 'file');
+            if isempty(obj.fid)
+                obj.fid = fopen(obj.fname,'a+');
+            end
+            fileid = obj.fid;
+            if ~e
+                for i = obj.names
+                    fprintf(fileid, sprintf('%s,', char(i{1})));
+                end
+                fprintf(fileid, 'Time');
+            end
+            fprintf(fileid, '\n');
+            for i = obj.vals
+                if size(i,2) > 1
+                    fprintf(fileid, '%f,', (i(1) + i(2)) / 2);
+                else
+                    fprintf(fileid, '%f,', i);
+                end
+            end
+            fprintf(fileid, '%s', char(datetime('now', 'Format', 'HH:mm:ss')));
         end
     end
 end

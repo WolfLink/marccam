@@ -39,6 +39,8 @@ classdef FitTracker < handle
             % of the peaks that the gaussian fit finds.
             
             f = obj.xFit;
+            obj.logger.vals = [];
+            obj.logger.names = {};
             
             % Set the matlab fit summary to be displayed when "X Fit
             % Analysis:" is selected from numouts
@@ -55,10 +57,10 @@ classdef FitTracker < handle
                 v = vals(c);
                 i = names(c);
                 k = strfind(i, 'b');
+                obj.logger.names{end+1} = strcat('X', i); %store values of properties for logging to file later
+                obj.logger.vals(end+1) = v;
                 if ~isempty(k{1}) %filter for only the b values
                    str{end + 1} = char(strcat(i, sprintf(': %f', v)));
-                   
-                   obj.logger.storedx = v; %store the value for printing later
                    
                    %Create a new list of data or add to the current list of
                    %data for the corresponding variable.  This data will be
@@ -97,10 +99,11 @@ classdef FitTracker < handle
                 v = vals(c);
                 i = names(c);
                 k = strfind(i, 'b');
+                
+                obj.logger.names{end+1} = strcat('Y',i);
+                obj.logger.vals(end+1) = v;
                 if ~isempty(k{1}) %filter for only the b values
                    str{end + 1} = char(strcat(i, sprintf(': %f', v)));
-                   
-                   obj.logger.storedy = v; %store the value for printing later
                    
                    %Create a new list of data or add to the current list of
                    %data for the corresponding variable.  This data will be
@@ -118,9 +121,7 @@ classdef FitTracker < handle
                 end
             end
             set(obj.numouts, 'String', str);
-            if strcmp(obj.fitType, 'gauss1+')
-               obj.logger.writeTrackEntry(); %logging only supported for gauss1+ for now
-            end
+            obj.logger.writeTrackEntry(); %log the collected data to a file
         end
         
         

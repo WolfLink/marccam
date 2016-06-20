@@ -155,9 +155,8 @@ classdef ImageProcessing
             [x,y] = prepareCurveData([], d);
             f = fit(x, y, 'x*0 + a1', 'StartPoint', 0);
             c = confint(f, 0.99);
-            disp(c(2) - c(1));
-            disp(size(img,1)/10);
-            %disp(max(d)/100);
+            %disp(c(2) - c(1));
+            %disp(size(img,1)/10);
             v = c(2) - c(1);
             %if v > max(d) / 100
             if v > size(img, 1)/10
