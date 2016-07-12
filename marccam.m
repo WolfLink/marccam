@@ -1,34 +1,34 @@
- function varargout = multicam(varargin)
-% MULTICAM is a program written by Marc Davis inspired by EDCAM by Edward
+ function varargout = marccam(varargin)
+% MARCCAM is a program written by Marc Davis inspired by EDCAM by Edward
 % Marti.  My email is marc.davis@berkeley.edu.
 
 
-% MULTICAM MATLAB code for multicam.fig
-%      MULTICAM, by itself, creates a new MULTICAM instance.
+% MARCCAM MATLAB code for marccam.fig
+%      MARCCAM, by itself, creates a new MARCCAM instance.
 %
-%      H = MULTICAM returns the handle to a new MULTICAM instance.
+%      H = MARCCAM returns the handle to a new MARCCAM instance.
 %
-%      MULTICAM('CALLBACK',hObject,eventData,handles,...) calls the local
-%      function named CALLBACK in MULTICAM.M with the given input arguments.
+%      MARCCAM('CALLBACK',hObject,eventData,handles,...) calls the local
+%      function named CALLBACK in MARCCAM.M with the given input arguments.
 %
-%      MULTICAM('Property','Value',...) creates a new MULTICAM.  Starting 
+%      MARCCAM('Property','Value',...) creates a new MARCCAM.  Starting 
 %      from the left, property value pairs are
-%      applied to the GUI before multicam_OpeningFcn gets called.  An
+%      applied to the GUI before marccam_OpeningFcn gets called.  An
 %      unrecognized property name or invalid value makes property application
-%      stop.  All inputs are passed to multicam_OpeningFcn via varargin.
+%      stop.  All inputs are passed to marccam_OpeningFcn via varargin.
 %
 % See also: GUIDE, GUIDATA, GUIHANDLES
 
-% Edit the above text to modify the response to help multicam
+% Edit the above text to modify the response to help marccam
 
-% Last Modified by GUIDE v2.5 16-Jun-2016 14:35:18
+% Last Modified by GUIDE v2.5 12-Jul-2016 16:01:55
 
     % Begin initialization code - DO NOT EDIT
     gui_Singleton = 0;
     gui_State = struct('gui_Name',       mfilename, ...
                        'gui_Singleton',  gui_Singleton, ...
-                       'gui_OpeningFcn', @multicam_OpeningFcn, ...
-                       'gui_OutputFcn',  @multicam_OutputFcn, ...
+                       'gui_OpeningFcn', @marccam_OpeningFcn, ...
+                       'gui_OutputFcn',  @marccam_OutputFcn, ...
                        'gui_LayoutFcn',  [] , ...
                        'gui_Callback',   []);
     if nargin && ischar(varargin{1})
@@ -47,26 +47,26 @@
 % warning.
 %#ok<*DEFNU>
 
-% --- Executes just before multicam is made visible.
-function multicam_OpeningFcn(hObject, ~, handles, varargin)
+% --- Executes just before marccam is made visible.
+function marccam_OpeningFcn(hObject, ~, handles, varargin)
 % This function has no output args, see OutputFcn.
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-% varargin   command line arguments to multicam (see VARARGIN)
+% varargin   command line arguments to marccam (see VARARGIN)
 
-% Choose default command line output for multicam
+% Choose default command line output for marccam
 handles.output = hObject;
 
 % Update handles structure
 guidata(hObject, handles);
 
-% UIWAIT makes multicam wait for user response (see UIRESUME)
+% UIWAIT makes marccam wait for user response (see UIRESUME)
 % uiwait(handles.figure1);
 end
 
 % --- Outputs from this function are returned to the command line.
-function varargout = multicam_OutputFcn(~, ~, handles) 
+function varargout = marccam_OutputFcn(~, ~, handles) 
 % varargout  cell array for returning output args (see VARARGOUT);
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -85,7 +85,7 @@ function cameramenu_Callback(hObject, ~, handles)
 
 % Hints: contents = cellstr(get(hObject,'String')) returns cameramenu contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from cameramenu
-    minstance = MulticamInstance.instanceForFigure(get(hObject, 'parent'));
+    minstance = MarcCamInstance.instanceForFigure(get(hObject, 'parent'));
     if isempty(minstance.mainDisplayAxes)
        minstance.mainDisplayAxes = handles.mainDisplay;
        minstance.fitXAxes = handles.fitX;
@@ -110,7 +110,7 @@ function cameramenu_CreateFcn(hObject, ~, ~)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    empty - handles not created until after all CreateFcns called
     cameratypes = {'Select Camera'};
-    minstance = MulticamInstance.instanceForFigure(get(hObject, 'parent'));
+    minstance = MarcCamInstance.instanceForFigure(get(hObject, 'parent'));
     for cam = minstance.cameras
         c = cam{1};
         name = c.DeviceName;
@@ -132,7 +132,7 @@ function figure1_DeleteFcn(hObject, ~, ~)
 % hObject    handle to figure1 (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)'
-    MulticamInstance.removeInstance(hObject);
+    MarcCamInstance.removeInstance(hObject);
 end
 
 
@@ -142,7 +142,7 @@ function takePictureButton_Callback(hObject, ~, ~)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
     figg = get(hObject, 'parent');
-    minstance = MulticamInstance.instanceForFigure(figg);
+    minstance = MarcCamInstance.instanceForFigure(figg);
     minstance.updateImageOutput();
 end
 
@@ -153,7 +153,7 @@ function startbutton_Callback(hObject, ~, ~)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
     figg = get(hObject, 'parent');
-    minstance = MulticamInstance.instanceForFigure(figg);
+    minstance = MarcCamInstance.instanceForFigure(figg);
     minstance.currentCamera.startRecording();
     %camear = minstance.
 end
@@ -164,7 +164,7 @@ function stopbutton_Callback(hObject, ~, ~)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
     figg = get(hObject, 'parent');
-    minstance = MulticamInstance.instanceForFigure(figg);
+    minstance = MarcCamInstance.instanceForFigure(figg);
     minstance.currentCamera.stopRecording();
 end
 
@@ -178,7 +178,7 @@ function fittype_Callback(hObject, ~, ~)
 % Hints: contents = cellstr(get(hObject,'String')) returns fittype contents as cell array
 %        contents{get(hObject,'Value')} returns selected item from fittype
     figg = get(hObject, 'parent');
-    minstance = MulticamInstance.instanceForFigure(figg);
+    minstance = MarcCamInstance.instanceForFigure(figg);
     i = get(hObject, 'Value');
     contents = cellstr(get(hObject, 'String'));
     minstance.changeFitType(contents{i});
@@ -212,7 +212,7 @@ function numouts_Callback(hObject, ~, ~)
     %display(item_selected);
     
     figg = get(hObject, 'parent');
-    minstance = MulticamInstance.instanceForFigure(figg);
+    minstance = MarcCamInstance.instanceForFigure(figg);
     minstance.changeSelectedData(index_selected);
 end
 % --- Executes during object creation, after setting all properties.
@@ -227,7 +227,7 @@ function numouts_CreateFcn(hObject, ~, ~)
         set(hObject,'BackgroundColor','white');
     end
     figg = get(hObject, 'parent');
-    minstance = MulticamInstance.instanceForFigure(figg);
+    minstance = MarcCamInstance.instanceForFigure(figg);
     minstance.numouts = hObject;
 end
 
@@ -254,6 +254,14 @@ function detailOutput_CreateFcn(hObject, ~, ~)
         set(hObject,'BackgroundColor','white');
     end
     figg = get(hObject, 'parent');
-    minstance = MulticamInstance.instanceForFigure(figg);
+    minstance = MarcCamInstance.instanceForFigure(figg);
     minstance.detailouts = hObject;
+end
+
+
+% --- Executes during object creation, after setting all properties.
+function figure1_CreateFcn(~, ~, ~)
+    % hObject    handle to figure1 (see GCBO)
+    % eventdata  reserved - to be defined in a future version of MATLAB
+    % handles    empty - handles not created until after all CreateFcns called
 end

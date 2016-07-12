@@ -1,7 +1,7 @@
-classdef MulticamInstance < handle
-    % MULTICAMINSTANCE A class that is used to keep track of instances of
+classdef MarcCamInstance < handle
+    % MARCCAMINSTANCE A class that is used to keep track of instances of
     % MULTICAM.
-    %   Each instance of MULTICAMINSTANCE holds all of the properties needed 
+    %   Each instance of MARCCAMINSTANCE holds all of the properties needed 
     %   by a specific instance and handles to gui objects needed for output.
     
     properties
@@ -21,7 +21,7 @@ classdef MulticamInstance < handle
     end
     
     methods
-        function obj = MulticamInstance(f)
+        function obj = MarcCamInstance(f)
             obj.figure = f;
             obj.numID = f.Number;
             obj.cameras = Cam.listCameras;
@@ -94,7 +94,7 @@ classdef MulticamInstance < handle
            %multicaminstances
            persistent m;
            if isempty(m) && ~isempty(fig)
-               i = MulticamInstance(fig);
+               i = MarcCamInstance(fig);
                m = containers.Map(fig.Number, i);
            end
            hmap = m;
@@ -103,11 +103,11 @@ classdef MulticamInstance < handle
             %returns the multicaminstance that corresponds to the given
             %figure handle
             num = fig.Number;
-            hmap = MulticamInstance.manageHMap(fig);
+            hmap = MarcCamInstance.manageHMap(fig);
             if hmap.isKey(num)
                 i = hmap(num);
             else
-                i = MulticamInstance(fig);
+                i = MarcCamInstance(fig);
                 hmap(num) = i;
             end
         end
@@ -115,7 +115,7 @@ classdef MulticamInstance < handle
             %removes the multicaminstance for the given figure handle from
             %the list of instance.  This is called from the deleteFcn in
             %multicam.
-            hmap = MulticamInstance.manageHMap(fig);
+            hmap = MarcCamInstance.manageHMap(fig);
             minstance = hmap(fig.Number);
             for cam = minstance.cameras
                c = cam{1};
