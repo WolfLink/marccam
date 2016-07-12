@@ -149,6 +149,8 @@ classdef Cam < handle
                     c = FacetimeCam(adaptor, id);
                 case 'AVT Guppy F038B NIR'
                     c = GuppyF038B(adaptor, id);
+                case 'AVT Guppy PRO F046B'
+                    c = GuppyProF046B(adaptor, id);
                 otherwise
                     c = Cam.camWithAdaptorAndID(adaptor, id);
             end
