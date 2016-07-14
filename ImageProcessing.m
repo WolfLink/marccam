@@ -96,7 +96,7 @@ classdef ImageProcessing
             %something interesting.  Returns 1 if the image is blank and 0
             %if the image has content.
             
-            b = ImageProcessing.linearFitter(img) || ImageProcessing.maxCluster(img);
+            b = ImageProcessing.linearFitter(img);
             
             %if size(img, 3) > 1
             %    img = rgb2gray(img);
