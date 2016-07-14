@@ -51,14 +51,16 @@ classdef ImageProcessing
             fitTrack.yFit = f;
             
             s = size(ydata);
+            smap = flip(1:s(2));
             axes(yplot);
-            plot(ydata);
+            plot(ydata,smap);
             axis manual
-            axis([0,s(2),min(ydata),max(ydata)]);
+            axis([min(ydata),max(ydata),0,s(2)]);
+            %axis([0,s(2),min(ydata),max(ydata)]);
             hold on
-            plot(f);
+            plot(feval(f,1:s(2)),smap);
             hold off
-            view(-90, 90);
+            %view(-90, 90);
             set(gca, 'xdir', 'reverse');
             
             
@@ -93,9 +95,8 @@ classdef ImageProcessing
             %Detects whether the image is empty (monocolored) or has
             %something interesting.  Returns 1 if the image is blank and 0
             %if the image has content.
-
             
-            b = ImageProcessing.linearFitter(img);
+            b = ImageProcessing.linearFitter(img) || ImageProcessing.maxCluster(img);
             
             %if size(img, 3) > 1
             %    img = rgb2gray(img);
@@ -127,15 +128,15 @@ classdef ImageProcessing
                img = rgb2gray(img);
            end
            data = sum(img);
-           rindices = randperm(size(data,2));
+           %rindices = randperm(size(data,2));
            %rdata(rindices) = data;
-           [~, i] = sort(rdata); %has an issue with all black images
+           [~, i] = sort(data); %has an issue with all black images
            %i = rindices(i);
            sd = std([i(end), i(end-1), i(end-2),i(end-3),i(end-4)]); %take the standard devition of the x positions of the 5 brightest columns
-           disp(sd)
-           disp(size(img))
-           disp(size(i))
-           disp([i(end), i(end-1), i(end-2), i(end-3), i(end-4)])
+           %disp(sd)
+           %disp(size(img))
+           %disp(size(i))
+           %disp([i(end), i(end-1), i(end-2), i(end-3), i(end-4)])
            if sd > size(img,2) / 30
                b = 1; %if the brightest columns are very spread compared to the size of the image, then the image must be blank
            else
@@ -148,6 +149,8 @@ classdef ImageProcessing
             %well the image matches a constant fit.  If the data matches a
             %constant fit well then we are looking at noise with no clear
             %signals.
+            %weakness: this algorithm detects gradients or other forms of
+            %uneven background lighting as a signal
             if size(img, 3) >  1
                img = rgb2gray(img);
             end
