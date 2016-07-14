@@ -17,6 +17,7 @@ classdef MarcCamInstance < handle
         numouts %a listbox that gives data from the analysis of the x and y graphs
         detailouts %a listbox that gives more detailed data on a selected item from numouts
         selectedNumout %the currently selected item from numouts that detailouts give info on
+        vidMode %a string that represents the current video mode.  It is passed to camera objects.
         fitTrack %an instance of the FitTrack class used to track changes in fit parameters
     end
     
@@ -38,6 +39,7 @@ classdef MarcCamInstance < handle
             cam.minstance = obj;
             obj.statusText.String = 'Waiting for Start';
             cam.status = obj.statusText;
+            cam.switchVidMode(obj.vidMode);
             obj.changeFitType(obj.fitTrack.fitType); %reset the fit track
         end
         function updateImageOutput(obj)
@@ -58,6 +60,13 @@ classdef MarcCamInstance < handle
                     obj.statusText.String = sprintf('Frames: %d', obj.currentCamera.triggerCount);
                 end
             end
+            'ended'
+            obj.currentCamera.didUpdateImage();
+        end
+        
+        function changeVidType(obj, vm)
+            obj.vidMode = vm;
+            obj.currentCamera.switchVidMode(vm);
         end
         function redrawPlots(obj)
             % update the graphs that accompany the image and update the

@@ -17,6 +17,8 @@ classdef Cam < handle
         lastimg %The last recorded image.  It is used when an error prevents the class from getting a new image.
         status %A handle to the statusText object of the corresponding multicaminstance
         triggerCount %the number of triggers recieved since the last time triggering was started
+        vidMode %The current video mode of the camera.  Either
+        active %A boolean that defines whether or not the camera is currently taking video
     end
     
     methods
@@ -28,13 +30,36 @@ classdef Cam < handle
            %    Override this function to prepare for hardware triggering.
            %    See GentlCam for an example.
         end
+        
+        function switchVidMode(obj, vm)
+           obj.vidMode = vm;
+           %Options for vm:
+           %"Live Video" (default value)
+           %"Manual Trigger" (click "Take Picture" to take a picture)
+           %"Hardware Trigger" (rely on the camera's hardware trigger)
+           %"Live Video" (take pictures constantly)
+           %Implement these in subclasses as necessary for your specific
+           %camera
+        end
+        
         function startRecording(obj)
             %Starts the videoinput object, updates the status, and sets
             %triggerCount to 0.  You may want to ovverride this function in
             %a subclass for certain situations such as hardware triggering.
-            start(obj.vidin);
-            obj.status.String = 'Waiting for Trigger';
-            obj.triggerCount = 0;
+            if strcmp(obj.vidMode, 'Manual Trigger')
+                obj.minstance.updateImageOutput();
+            elseif strcmp(obj.vidMode, 'Live Video')
+                obj.active = 1;
+                obj.minstance.updateImageOutput();
+            else
+                if strcmp(obj.status.String, 'Hardware Trigger')
+                    obj.status.String = 'Waiting for trigger';
+                end
+                start(obj.vidin);
+                obj.status.String = 'Recording';
+                obj.triggerCount = 0;
+                obj.active = 1; 
+            end
         end
         function stopRecording(obj)
             %Stops the videoinput object and updates the status.  You may
@@ -42,6 +67,7 @@ classdef Cam < handle
             %situations such as hardware triggering.
             stop(obj.vidin);
             obj.status.String = 'Waiting for Start';
+            obj.active = 0;
         end
         
         function picture = takePicture(obj)
@@ -50,6 +76,12 @@ classdef Cam < handle
            %triggering.  You may want to override this function in those
            %situations.
            picture = getsnapshot(obj.vidin);
+        end
+        
+        function didUpdateImage(obj)
+           if strcmp(obj.vidMode, 'Live Video') && (obj.active == 1)
+               obj.minstance.updateImageOutput();
+           end
         end
         
         function picture = getCurrentImage(obj)
@@ -167,7 +199,7 @@ classdef Cam < handle
             end
         end
         
-        function hardwaretrigger(v, e, obj)
+        function hardwaretrigger(~, ~, obj)
            %Update the current image when the camera recieves a hardware
            %trigger.
            obj.updateImageOutput();

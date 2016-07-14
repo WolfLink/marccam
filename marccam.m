@@ -21,7 +21,7 @@
 
 % Edit the above text to modify the response to help marccam
 
-% Last Modified by GUIDE v2.5 12-Jul-2016 16:01:55
+% Last Modified by GUIDE v2.5 13-Jul-2016 14:58:19
 
     % Begin initialization code - DO NOT EDIT
     gui_Singleton = 0;
@@ -264,4 +264,33 @@ function figure1_CreateFcn(~, ~, ~)
     % hObject    handle to figure1 (see GCBO)
     % eventdata  reserved - to be defined in a future version of MATLAB
     % handles    empty - handles not created until after all CreateFcns called
+end
+
+
+% --- Executes on selection change in vidmenu.
+function vidmenu_Callback(hObject, ~, ~)
+    % hObject    handle to vidmenu (see GCBO)
+    % eventdata  reserved - to be defined in a future version of MATLAB
+    % handles    structure with handles and user data (see GUIDATA)
+
+    % Hints: contents = cellstr(get(hObject,'String')) returns vidmenu contents as cell array
+    %        contents{get(hObject,'Value')} returns selected item from vidmenu
+    figg = get(hObject, 'parent');
+    minstance = MarcCamInstance.instanceForFigure(figg);
+    i = get(hObject, 'Value');
+    contents = cellstr(get(hObject, 'String'));
+    minstance.changeVidType(contents{i});
+end
+
+% --- Executes during object creation, after setting all properties.
+function vidmenu_CreateFcn(hObject, ~, ~)
+    % hObject    handle to vidmenu (see GCBO)
+    % eventdata  reserved - to be defined in a future version of MATLAB
+    % handles    empty - handles not created until after all CreateFcns called
+
+    % Hint: popupmenu controls usually have a white background on Windows.
+    %       See ISPC and COMPUTER.
+    if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+        set(hObject,'BackgroundColor','white');
+    end
 end
