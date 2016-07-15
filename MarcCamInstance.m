@@ -31,6 +31,7 @@ classdef MarcCamInstance < handle
             obj.fitTrack = FitTracker('gauss1+');
             obj.img = 0;
             obj.selectedNumout = 2;
+            obj.vidMode = 'Manual Trigger';
         end
         function switchCamera(obj, cam)
             %stop the current camera and switch to the new camera

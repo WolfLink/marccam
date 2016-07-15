@@ -101,7 +101,7 @@ classdef Cam < handle
             obj.DeviceID = id;
             obj.triggerCount = 0;
             obj.active = 0;
-            
+            obj.vidMode = 'Manual Trigger';
         end
         function initCam(obj)
             c = imaqhwinfo(obj.AdaptorName, obj.DeviceID);
@@ -196,7 +196,7 @@ classdef Cam < handle
         
         function hardwaretrigger(~, ~, obj)
            %Update the current image when the camera recieves a hardware
-           %trigger.
+           %trigger.'
            obj.updateImageOutput();
         end
     end

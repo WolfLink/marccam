@@ -15,6 +15,7 @@ classdef GentlCam < Cam
            obj@Cam(adaptor, id); 
         end
         function switchVidMode(obj, vm)
+            switchVidMode@Cam(obj, vm);
            v = obj.vidin;
            switch vm
                case 'Hardware Trigger' 
@@ -56,6 +57,7 @@ classdef GentlCam < Cam
                    else
                        disp('unable to find proper trigger mode')
                    end
+                   set(v, 'TriggerFcn', {@Cam.hardwaretrigger, obj.minstance});
                otherwise
                    disp('Error: unsupported video mode')
            end
