@@ -17,18 +17,7 @@ classdef FacetimeCam < Cam
            picture = ycbcr2rgb(picture); %the FaceTime camera outputs to ycbcr by default so convert to rgb
         end
         function picture = getCurrentImage(obj)
-           if obj.vidin.FramesAvailable > 0
-              obj.lastimg = getdata(obj.vidin, 1); %get the most recent frame
-              obj.lastimg = ycbcr2rgb(obj.lastimg);
-           else
-               try
-                   obj.lastimg = obj.takePicture(); %if there are no currently available frames then take a picture now
-               catch e
-                   disp('unable to get an image')
-                   %if we are unable to take a new picture, use the previous picture
-               end
-           end
-           picture = obj.lastimg;
+           picture = ycbcr2rgb(getCurrentImage@Cam(obj));
         end
         function arm(obj)
             arm@Cam(obj);

@@ -20,6 +20,7 @@ classdef FitTracker < handle
         detailouts %the handle to the detailouts that corresponds to this instance of multicaminstance
         callbacktrack %a list of data to be displayed when a certain item in numouts is selected
         logger %an instance of the DataLogger class to write tracked data to a file
+        loggingEnabled %will log data if this is 1 and will not if this is 0
     end
     
     methods
@@ -27,6 +28,7 @@ classdef FitTracker < handle
         function obj = FitTracker(ft)
            obj.fitType = ft;
            obj.callbacktrack = {};
+           obj.loggingEnabled = 0;
         end
         function displayDetails(obj, index)
            %update the current contents of detailouts
@@ -69,7 +71,7 @@ classdef FitTracker < handle
                    cbts = size(obj.callbacktrack);
                    if cbtc > cbts(2)
                        obj.callbacktrack{cbtc} = {v};
-                   else
+                   elseif obj.loggingEnabled == 1
                       cbtl = obj.callbacktrack{cbtc};
                       cbtl{end + 1} = v;
                       obj.callbacktrack{cbtc} = cbtl;
@@ -112,7 +114,7 @@ classdef FitTracker < handle
                    cbts = size(obj.callbacktrack);
                    if cbtc > cbts(2)
                        obj.callbacktrack{cbtc} = {v};
-                   else
+                   elseif obj.loggingEnabled == 1
                       cbtl = obj.callbacktrack{cbtc};
                       cbtl{end + 1} = v;
                       obj.callbacktrack{cbtc} = cbtl;

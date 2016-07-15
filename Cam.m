@@ -50,7 +50,8 @@ classdef Cam < handle
                 obj.minstance.updateImageOutput();
             elseif strcmp(obj.vidMode, 'Live Video')
                 obj.active = 1;
-                obj.minstance.updateImageOutput();
+                set(obj.vidin, 'TriggerFcn', {@Cam.hardwaretrigger, obj.minstance});
+                start(obj.vidin);
             else
                 if strcmp(obj.status.String, 'Hardware Trigger')
                     obj.status.String = 'Waiting for trigger';
@@ -66,16 +67,9 @@ classdef Cam < handle
             %want to override this function in a subclass for certain
             %situations such as hardware triggering.
             stop(obj.vidin);
+            flushdata(obj.vidin);
             obj.status.String = 'Waiting for Start';
             obj.active = 0;
-        end
-        
-        function picture = takePicture(obj)
-           %Takes a quick picture.  This function may not work when the
-           %camera is configured in certain ways such as for hardware
-           %triggering.  You may want to override this function in those
-           %situations.
-           picture = getsnapshot(obj.vidin);
         end
         
         function didUpdateImage(obj)
@@ -87,16 +81,13 @@ classdef Cam < handle
         function picture = getCurrentImage(obj)
            %Returns the last picture taken or takes a new one.
            if obj.vidin.FramesAvailable > 0
-              obj.lastimg = getdata(obj.vidin, 1); %get the most recent frame
-           else
-               try
-                   obj.lastimg = obj.takePicture(); %if there are no currently available frames then take a picture now
-               catch e
-                   disp('unable to get an image')
-                   %if we are unable to take a new picture, use the previous picture
+               picture = getdata(obj.vidin);
+               if obj.vidin.FramesAvailable > 1
+                   flushdata(obj.vidin); %get rid of excess data to not cause a memory problem and to ensure we have recent frames
                end
+           else
+              picture = getsnapshot(obj.vidin); 
            end
-           picture = obj.lastimg;
         end
         
         function props = getCameraProperties(obj)
@@ -109,11 +100,15 @@ classdef Cam < handle
             obj.AdaptorName = adaptor;
             obj.DeviceID = id;
             obj.triggerCount = 0;
+            obj.active = 0;
+            
         end
         function initCam(obj)
             c = imaqhwinfo(obj.AdaptorName, obj.DeviceID);
             obj.DeviceName = c.DeviceName;
             arm(obj);
+            obj.vidin.FramesPerTrigger = 1;
+            obj.vidin.TriggerRepeat = inf;
             s = getselectedsource(obj.vidin);
             if isprop(s, 'DeviceID')
                 obj.serialNumber = s.DeviceID;
@@ -204,7 +199,6 @@ classdef Cam < handle
            %trigger.
            obj.updateImageOutput();
         end
-        
     end
 end
 

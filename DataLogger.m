@@ -4,7 +4,7 @@ classdef DataLogger < handle
     
     properties
         stringid
-        fname
+        fname %the filename of the current log file
         fid
         vals
         names

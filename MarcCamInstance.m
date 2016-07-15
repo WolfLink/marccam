@@ -52,7 +52,7 @@ classdef MarcCamInstance < handle
             if ~isempty(obj.mainDisplayAxes)
                 axes(obj.mainDisplayAxes)
                 image(obj.img);
-                if ImageProcessing.detectBlank(obj.img)
+                if strcmp(obj.currentCamera.DeviceName, 'none') || ImageProcessing.detectBlank(obj.img)
                     obj.statusText.String = 'Blank Image Detected';
                 else
                     obj.redrawPlots();
@@ -60,8 +60,6 @@ classdef MarcCamInstance < handle
                     obj.statusText.String = sprintf('Frames: %d', obj.currentCamera.triggerCount);
                 end
             end
-            'ended'
-            obj.currentCamera.didUpdateImage();
         end
         
         function changeVidType(obj, vm)
@@ -73,6 +71,7 @@ classdef MarcCamInstance < handle
             % numerical outputs
             obj.fitTrack.numouts = obj.numouts;
             obj.fitTrack.detailouts = obj.detailouts;
+            obj.fitTrack.loggingEnabled = 1 - strcmp(obj.currentCamera.vidMode, 'Live Video');
             ImageProcessing.fillPlots(obj.img, obj.fitXAxes, obj.fitYAxes, obj.fitTrack);
             obj.fitTrack.displayDetails(obj.selectedNumout);
         end
